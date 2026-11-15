@@ -18,7 +18,7 @@ By combining educational content with browser-based gameplay, SOLARIS encourages
 
 ## 🌐 Live Experience
 
-🚀 **Play SOLARIS:** [Launch Website]((https://solarisbyhyperion.netlify.app/landing.html))
+🚀 **Play SOLARIS:** [Launch Website](https://solarisbyhyperion.netlify.app/landing.html)
 
 > 💻 **Recommended Experience:** We strongly recommend using a laptop or desktop computer for the best experience. Some gameplay elements and visual features are better experienced on a larger screen.
 
