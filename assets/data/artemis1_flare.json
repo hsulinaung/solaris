@@ -1,0 +1,302 @@
+[
+  {
+    "flrID": "2022-11-18T08:57:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-18T08:57Z",
+    "peakTime": "2022-11-18T09:14Z",
+    "endTime": "2022-11-18T09:31Z",
+    "classType": "C5.5",
+    "sourceLocation": "N28W88",
+    "activeRegionNum": 13145,
+    "note": "Source is likely Active Region 13145 that is visible just beyond the west limb of the Earth facing disk. Associated eruption best seen in SDO AIA 171/193/304.",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22341/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-18T09:36:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-18T11:57Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-11-18T11:23:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-18T11:23Z",
+    "peakTime": "2022-11-18T11:28Z",
+    "endTime": "2022-11-18T11:33Z",
+    "classType": "C5.1",
+    "sourceLocation": "N20W35",
+    "activeRegionNum": null,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22348/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-18T12:00:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-18T20:28Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-11-19T06:05:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-19T06:05Z",
+    "peakTime": "2022-11-19T06:23Z",
+    "endTime": "2022-11-19T06:38Z",
+    "classType": "C8.3",
+    "sourceLocation": "N21W45",
+    "activeRegionNum": 13150,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22363/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-19T07:36:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-19T10:25Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-11-19T12:42:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-19T12:42Z",
+    "peakTime": "2022-11-19T12:56Z",
+    "endTime": "2022-11-19T13:11Z",
+    "classType": "M1.6",
+    "sourceLocation": "N20W50",
+    "activeRegionNum": 13150,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22367/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-19T13:53:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-19T13:16Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-11-22T06:59:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-22T06:59Z",
+    "peakTime": "2022-11-22T07:27Z",
+    "endTime": "2022-11-22T07:42Z",
+    "classType": "C7.0",
+    "sourceLocation": "S14E14",
+    "activeRegionNum": 13151,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22426/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-22T08:00:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-22T07:47Z",
+    "versionId": 2
+  },
+  {
+    "flrID": "2022-11-22T18:49:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-22T18:49Z",
+    "peakTime": "2022-11-22T19:08Z",
+    "endTime": "2022-11-22T19:16Z",
+    "classType": "C4.8",
+    "sourceLocation": "S13E11",
+    "activeRegionNum": 13151,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22446/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-22T20:24:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-23T13:31Z",
+    "versionId": 2
+  },
+  {
+    "flrID": "2022-11-29T13:11:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-11-29T13:11Z",
+    "peakTime": "2022-11-29T13:58Z",
+    "endTime": null,
+    "classType": "C4.3",
+    "sourceLocation": "S11W98",
+    "activeRegionNum": 13147,
+    "note": "Likely from AR 13147 which is currently behind the limb.",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22569/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-11-29T14:38:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-11-29T20:23Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-12-01T07:04:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-12-01T07:04Z",
+    "peakTime": "2022-12-01T07:21Z",
+    "endTime": "2022-12-01T07:36Z",
+    "classType": "M1.0",
+    "sourceLocation": "N27W35",
+    "activeRegionNum": 13152,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22593/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-12-01T07:48:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-12-01T07:53Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-12-03T01:46:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-12-03T01:46Z",
+    "peakTime": "2022-12-03T01:52Z",
+    "endTime": "2022-12-03T01:57Z",
+    "classType": "C1.1",
+    "sourceLocation": "S19E70",
+    "activeRegionNum": 13153,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22619/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-12-03T02:12:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-12-03T04:09Z",
+    "versionId": 1
+  },
+  {
+    "flrID": "2022-12-03T17:36:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-12-03T17:36Z",
+    "peakTime": "2022-12-03T17:41Z",
+    "endTime": "2022-12-03T17:45Z",
+    "classType": "M1.2",
+    "sourceLocation": "N14E80",
+    "activeRegionNum": 13157,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22628/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-12-03T18:00:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-12-04T03:44Z",
+    "versionId": 2
+  },
+  {
+    "flrID": "2022-12-09T13:59:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-12-09T13:59Z",
+    "peakTime": "2022-12-09T14:13Z",
+    "endTime": "2022-12-09T14:32Z",
+    "classType": "C6.0",
+    "sourceLocation": "S20E90",
+    "activeRegionNum": 13163,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22699/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-12-09T14:49:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-12-13T16:38Z",
+    "versionId": 2
+  },
+  {
+    "flrID": "2022-12-11T11:28:00-FLR-001",
+    "catalog": "M2M_CATALOG",
+    "instruments": [
+      {
+        "displayName": "GOES-P: EXIS 1.0-8.0"
+      }
+    ],
+    "beginTime": "2022-12-11T11:28Z",
+    "peakTime": "2022-12-11T11:40Z",
+    "endTime": "2022-12-11T11:44Z",
+    "classType": "C2.9",
+    "sourceLocation": "S15W60",
+    "activeRegionNum": 13153,
+    "note": "",
+    "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/22728/-1",
+    "linkedEvents": [
+      {
+        "activityID": "2022-12-11T12:12:00-CME-001"
+      }
+    ],
+    "sentNotifications": null,
+    "submissionTime": "2022-12-11T14:46Z",
+    "versionId": 1
+  }
+]
