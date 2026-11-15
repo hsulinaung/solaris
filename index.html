@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLAR ALERT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .background-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* Lower-middle vertical menu container */
+    .menu-container {
+      position: fixed;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .exit-image-btn {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: min(240px, 72vw);
+      aspect-ratio: 1457 / 703;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .exit-image-btn img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .exit-image-btn:hover,
+    .exit-image-btn:focus-visible {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
+    }
+
+    .exit-image-btn:focus-visible {
+      outline: 2px solid #7dd3fc;
+      outline-offset: 3px;
+    }
+
+    .exit-image-btn:active {
+      transform: scale(0.98);
+    }
+
+    .play-image-btn {
+      position: relative;
+      width: min(220px, 70vw);
+      height: min(70px, 22vw);
+      overflow: hidden;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .play-image-btn img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(380px, 120vw);
+      height: min(380px, 120vw);
+      max-width: none;
+      object-fit: contain;
+      transform: translate(-50%, -50%);
+    }
+
+    .play-image-btn:hover,
+    .play-image-btn:focus-visible {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
+    }
+
+    .play-image-btn:focus-visible {
+      outline: 2px solid #7dd3fc;
+      outline-offset: 3px;
+    }
+
+    .play-image-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Upper-right icon bar */
+    .top-right-controls {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .icon-btn img {
+      width: 44px;
+      height: 44px;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.85));
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .icon-btn.disabled {
+      cursor: default;
+      opacity: 0.85;
+    }
+
+    .icon-btn.disabled:hover {
+      transform: none;
+    }
+
+    .settings-modal {
+      position: fixed;
+      top: 5rem;
+      right: 1.5rem;
+      z-index: 4;
+      display: none;
+      width: min(320px, calc(100vw - 3rem));
+      padding: 1.25rem;
+      color: #ffffff;
+      background: rgba(10, 15, 28, 0.96);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      border-radius: 14px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+    }
+
+    .settings-modal h2 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .sound-row,
+    .volume-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .sound-toggle {
+      padding: 0.2rem;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .sound-toggle img {
+      display: block;
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .volume-row input {
+      width: 120px;
+      accent-color: #fbbf24;
+    }
+
+    .audio-status {
+      min-height: 2.5em;
+      margin-bottom: 0.8rem;
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .close-settings-btn {
+      width: 100%;
+      padding: 0.6rem;
+      color: #ffffff;
+      background: #334155;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Background Video -->
+  <video class="background-video" src="assets/video/welcome-background.mp4" autoplay muted playsinline aria-hidden="true"></video>
+
+  <!-- Background Audio -->
+  <audio id="bgAudio" src="assets/audio/bg-music.mp3" autoplay loop></audio>
+
+  <!-- Upper-Right Controls -->
+  <div class="top-right-controls">
+    <button id="settingBtn" class="icon-btn" aria-label="Settings" aria-expanded="false">
+      <img src="assets/icon/setting.png" alt="Settings" />
+    </button>
+  </div>
+
+  <section id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsTitle" aria-hidden="true">
+    <h2 id="settingsTitle">Settings</h2>
+    <div class="sound-row">
+      <span>Background Music</span>
+      <button id="audioToggleBtn" class="sound-toggle" type="button" aria-label="Turn background music off" aria-pressed="true">
+        <img id="audioIcon" src="assets/icon/bg-on.png" alt="Music on" />
+      </button>
+    </div>
+    <label class="volume-row" for="volumeSlider">
+      <span>Volume</span>
+      <input id="volumeSlider" type="range" min="0" max="100" value="50" />
+      <span id="volumeValue">50%</span>
+    </label>
+    <p id="audioStatus" class="audio-status" aria-live="polite"></p>
+    <button id="closeSettingsBtn" class="close-settings-btn" type="button">Close</button>
+  </section>
+
+  <!-- Main Menu -->
+  <div class="menu-container">
+    <button id="playBtn" class="play-image-btn" type="button" aria-label="Play">
+      <img src="assets/icon/play.png" alt="" />
+    </button>
+    <button id="exitBtn" class="exit-image-btn" type="button" aria-label="Exit">
+      <img src="assets/icon/mm-exit.png" alt="" />
+    </button>
+  </div>
+
+  <script>
+    const playBtn = document.getElementById('playBtn');
+    const exitBtn = document.getElementById('exitBtn');
+
+    playBtn.addEventListener('click', () => {
+      window.top.location.href = 'game.html';
+    });
+
+    exitBtn.addEventListener('click', () => {
+      window.top.location.href = 'landing.html';
+    });
+
+    const bgAudio = document.getElementById('bgAudio');
+    const audioToggleBtn = document.getElementById('audioToggleBtn');
+    const audioIcon = document.getElementById('audioIcon');
+    const settingBtn = document.getElementById('settingBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    const audioStatus = document.getElementById('audioStatus');
+    let isAudioOn = true;
+    let hasInteracted = false;
+
+    bgAudio.volume = Number(volumeSlider.value) / 100;
+
+    function updateAudioToggle() {
+      audioIcon.src = isAudioOn ? 'assets/icon/bg-on.png' : 'assets/icon/bg-off.png';
+      audioIcon.alt = isAudioOn ? 'Music on' : 'Music off';
+      audioToggleBtn.setAttribute('aria-label', isAudioOn ? 'Turn background music off' : 'Turn background music on');
+      audioToggleBtn.setAttribute('aria-pressed', String(isAudioOn));
+    }
+
+    function playBackgroundMusic() {
+      bgAudio.play().then(() => {
+        audioStatus.textContent = '';
+      }).catch((error) => {
+        if (error.name === 'NotAllowedError' && isAudioOn && !hasInteracted) {
+          isAudioOn = false;
+          updateAudioToggle();
+          audioStatus.textContent = 'Autoplay was blocked. Click or tap the page to retry, or turn music on here.';
+        } else if (isAudioOn) {
+          audioStatus.textContent = 'Music could not start. Check browser audio permissions and try again.';
+        }
+      });
+    }
+
+    settingBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'block';
+      settingsModal.setAttribute('aria-hidden', 'false');
+      settingBtn.setAttribute('aria-expanded', 'true');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+      settingsModal.setAttribute('aria-hidden', 'true');
+      settingBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    audioToggleBtn.addEventListener('click', () => {
+      hasInteracted = true;
+      isAudioOn = !isAudioOn;
+      updateAudioToggle();
+      if (!isAudioOn) {
+        bgAudio.pause();
+        audioStatus.textContent = '';
+      } else {
+        playBackgroundMusic();
+      }
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      bgAudio.volume = Number(volumeSlider.value) / 100;
+      volumeValue.textContent = `${volumeSlider.value}%`;
+    });
+
+    document.addEventListener('pointerdown', (event) => {
+      hasInteracted = true;
+      const clickedSoundToggle = event.target === audioToggleBtn || audioToggleBtn.contains(event.target);
+      if (!clickedSoundToggle && !isAudioOn) {
+        isAudioOn = true;
+        updateAudioToggle();
+      }
+      if (!clickedSoundToggle && isAudioOn && bgAudio.paused) playBackgroundMusic();
+    }, { once: true });
+
+    updateAudioToggle();
+    playBackgroundMusic();
+    
+  </script>
+
+</body>
+</html>

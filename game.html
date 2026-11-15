@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLAR ALERT - Mission</title>
+  <link rel="stylesheet" href="game.css" />
+  <link rel="stylesheet" href="minigame.css" />
+</head>
+<body>
+
+  <!-- Background Audio Tracks -->
+  <audio id="bgMusic" src="assets/audio/bg-music.mp3" loop></audio>
+  <audio id="stormMusic" src="assets/audio/solar-storm-bg.mp3" loop></audio>
+  <audio id="voiceOverAudio" preload="auto"></audio>
+
+  <!-- Cutscene Video -->
+  <video id="introVideo" class="fullscreen-media" src="assets/video/solar-storm.mp4" playsinline></video>
+  <button id="skipBtn" class="skip-btn">Skip</button>
+
+  <!-- Main Cockpit View -->
+  <img id="cockpitBg" class="fullscreen-media" src="assets/images/cockpit.jpg" alt="Station Cockpit" />
+
+  <!-- Red Emergency Lighting Overlay (Active during Power Outbreak) -->
+  <div id="emergencyLightOverlay" class="emergency-light-overlay"></div>
+
+  <!-- Dark Overlay for Spotlight Tutorial & End Debrief -->
+  <div id="tutorialOverlay" class="tutorial-overlay"></div>
+
+  <!-- System Bot + Overhead Point Collector -->
+  <div id="systemBotCorner" class="system-bot-corner">
+    <div id="botPointCollector" class="bot-point-collector" aria-live="polite">
+      <span class="bot-collector-icon">🤖</span>
+      <div class="bot-collector-info">
+        <span class="bot-collector-label">BOT SCORE BANK</span>
+        <strong id="botPointValue">0 PTS</strong>
+      </div>
+      <span id="botPointFloat" class="bot-point-float"></span>
+    </div>
+    <img src="assets/icon/system-bot.png" alt="System Bot" class="system-bot-img" />
+  </div>
+
+  <!-- Top-Center Earth-Lunar Radio Warning Banner -->
+  <div id="radioAlertBanner" class="radio-alert-banner" role="alert" aria-live="assertive">
+    <span id="radioAlertTag" class="radio-alert-tag">EARTH COMMS</span>
+    <span id="radioAlertText" class="radio-alert-text"></span>
+  </div>
+
+  <!-- Top-Left Stack: Objective HUD + Expressive 2-Minute Choice Timer -->
+  <div class="top-left-hud-stack">
+    <div id="objectiveHud" class="objective-hud">
+      <button id="objectiveToggleBtn" class="objective-icon-btn" type="button" title="Show objectives" aria-label="Show objectives" aria-expanded="false">
+        <img id="objectiveIcon" src="assets/icon/objective.png" alt="Objectives" class="objective-icon-img" />
+      </button>
+      <div id="objectiveBody" class="objective-body">
+        <div id="objectiveTitle" class="objective-title">Current Objective</div>
+        <div id="objectiveText" class="objective-text"></div>
+      </div>
+    </div>
+
+    <!-- 2-Minute Spinning Sand Clock Choice Timer (Moves with Objective Maximize/Minimize) -->
+    <div id="choiceTimerHud" class="choice-timer-hud" role="timer" aria-live="polite">
+      <div class="timer-top-row">
+        <span id="sandclockIcon" class="sandclock-spinner" aria-hidden="true">⏳</span>
+        <div class="timer-text-group">
+          <span id="timerMoodText" class="timer-mood-text">DECISION WINDOW</span>
+          <strong id="timerCountdownText" class="timer-countdown-text">02:00</strong>
+        </div>
+      </div>
+      <div class="timer-bar-track">
+        <div id="timerBarFill" class="timer-bar-fill" style="width: 100%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top-Right 5 Resource Meters -->
+  <div id="resourceHud" class="resource-hud">
+    <!-- 1. Crew Radiation -->
+    <button id="meter-radiation" class="resource-meter rad-normal" data-resource="radiation">
+      <img src="assets/icon/radiation.png" alt="Crew Radiation" class="resource-icon" />
+      <div class="meter-info">
+        <div class="meter-label">
+          <span>Crew Radiation</span>
+          <span id="val-radiation">15% (75 mSv)</span>
+        </div>
+        <div class="meter-track">
+          <div id="bar-radiation" class="meter-fill fill-radiation-normal" style="width: 15%;"></div>
+        </div>
+      </div>
+    </button>
+
+    <!-- 2. Outpost Power -->
+    <button id="meter-power" class="resource-meter" data-resource="power">
+      <img src="assets/icon/power.png" alt="Outpost Power" class="resource-icon" />
+      <div class="meter-info">
+        <div class="meter-label">
+          <span>Outpost Power</span>
+          <span id="val-power">85% (34 kWh)</span>
+        </div>
+        <div class="meter-track">
+          <div id="bar-power" class="meter-fill fill-power" style="width: 85%;"></div>
+        </div>
+      </div>
+    </button>
+
+    <!-- 3. Water Reserve -->
+    <button id="meter-water" class="resource-meter" data-resource="water">
+      <img src="assets/icon/water.png" alt="Water Reserve" class="resource-icon" />
+      <div class="meter-info">
+        <div class="meter-label">
+          <span>Water Reserve</span>
+          <span id="val-water">70% (140 L)</span>
+        </div>
+        <div class="meter-track">
+          <div id="bar-water" class="meter-fill fill-water" style="width: 70%;"></div>
+        </div>
+      </div>
+    </button>
+
+    <!-- 4. Ice Core -->
+    <button id="meter-ice" class="resource-meter" data-resource="ice">
+      <img src="assets/icon/ice-core.png" alt="Ice Core" class="resource-icon" />
+      <div class="meter-info">
+        <div class="meter-label">
+          <span>Ice Core</span>
+          <span id="val-ice">60% (2.3 wt% per cube)</span>
+        </div>
+        <div class="meter-track">
+          <div id="bar-ice" class="meter-fill fill-ice" style="width: 60%;"></div>
+        </div>
+      </div>
+    </button>
+
+    <!-- 5. Crew Food Rations -->
+    <button id="meter-food" class="resource-meter" data-resource="food">
+      <img src="assets/icon/food.png" alt="Food Rations" class="resource-icon" />
+      <div class="meter-info">
+        <div class="meter-label">
+          <span>Food Rations</span>
+          <span id="val-food">100% (30 kg)</span>
+        </div>
+        <div class="meter-track">
+          <div id="bar-food" class="meter-fill fill-food" style="width: 100%;"></div>
+        </div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Step 2: Interactive Resource Highlight Guide (With System Bot) -->
+  <div id="mechanicsCard" class="mechanics-card">
+    <div id="mechStepBadge" class="mech-step-badge">System Bot // Resource Guide (1/4)</div>
+    <div class="mech-header">
+      <img id="mechIcon" src="assets/icon/radiation.png" alt="Resource Icon" class="mech-icon" />
+      <h2 id="mechTitle" class="mechanics-title">Crew Radiation</h2>
+    </div>
+    <p id="mechDesc" class="mech-desc"></p>
+    <button id="mechNextBtn" class="start-shift-btn">Next Resource</button>
+  </div>
+
+  <!-- Solar Spike Warning Banner (Triggers when Routine Quota is met) -->
+  <div id="solarSpikeBanner" class="spike-banner">
+    <div class="spike-title">⚠️ DEEP-SPACE TELEMETRY ALERT ⚠️</div>
+    <div class="spike-sub">X-Class Solar Flare Eruption Detected — Incoming Radiation Wave!</div>
+  </div>
+
+  <!-- Bottom-Center Interactive Cockpit Action Deck (System Bot Prompting Actions) -->
+  <div id="actionDeck" class="action-deck">
+    <div class="system-prompt-bar">
+      <div class="system-prompt-content">
+        <span class="system-prompt-badge">SYSTEM BOT // ACTION REQUIRED</span>
+        <div id="actionFeedback" class="action-feedback">
+          Routine Shift Active: Select a cockpit system below. Click "?" on any choice to inspect its details and effects.
+        </div>
+      </div>
+    </div>
+    <div id="actionButtonsContainer" class="action-buttons"></div>
+  </div>
+
+  <!-- Clickable Resource Detail Popup Modal -->
+  <div id="detailModal" class="detail-modal">
+    <div class="detail-header">
+      <img id="detailIcon" src="assets/icon/radiation.png" alt="Icon" class="detail-icon" />
+      <div>
+        <h3 id="detailTitle" class="detail-title">Resource Name</h3>
+        <span id="detailValue" class="detail-status">Current Level: 0%</span>
+      </div>
+    </div>
+    <p id="detailDesc" class="detail-desc"></p>
+    <button id="closeDetailBtn" class="close-detail-btn">Got It</button>
+  </div>
+
+  <!-- Educational Mission Debrief / Abort Modal -->
+  <div id="debriefModal" class="debrief-modal">
+    <div id="debriefBadge" class="debrief-badge">MISSION DEBRIEF</div>
+    <h2 id="debriefTitle" class="debrief-title">Solar Storm Passed</h2>
+    <p id="debriefSummary" class="debrief-summary"></p>
+
+    <div id="debriefStats" class="debrief-stats"></div>
+
+    <div class="debrief-section">
+      <div class="debrief-section-title">Mission Decision Log</div>
+      <ul id="debriefChoices" class="debrief-choices"></ul>
+    </div>
+
+    <div class="debrief-lesson-box">
+      <div class="debrief-lesson-title">🛰️ NASA Science Takeaway</div>
+      <p id="debriefLesson" class="debrief-lesson-text"></p>
+    </div>
+
+    <div class="debrief-actions">
+      <button id="replayBtn" class="start-shift-btn">Try Another Strategy</button>
+      <button id="menuBtn" class="secondary-btn">Main Menu</button>
+    </div>
+  </div>
+
+  <!-- Earth-Lunar-System Radio Comms Dialog -->
+  <div id="commsBox" class="comms-box">
+    <!-- Big Left Character: Earth Station Communicator -->
+    <img
+      id="earthAvatarWrap"
+      src="assets/icon/earth-station-communicator.png"
+      alt="Earth Station Communicator"
+      class="comms-big-avatar avatar-left active-speaker"
+    />
+
+    <!-- Big Center Character: System Bot (Shown when neither Earth nor Commander is speaking) -->
+    <img
+      id="systemAvatarWrap"
+      src="assets/icon/system-bot.png"
+      alt="System Bot"
+      class="comms-big-avatar avatar-system hidden-speaker"
+    />
+
+    <!-- Big Right Character: Space Station Commander -->
+    <img
+      id="lunarAvatarWrap"
+      src="assets/icon/space-station-commander.png"
+      alt="Space Station Commander"
+      class="comms-big-avatar avatar-right inactive-speaker"
+    />
+
+    <!-- Bottom-Center Dialog Box -->
+    <div class="comms-dialog-panel">
+      <div id="speakerBadge" class="speaker-badge speaker-earth">Earth Station</div>
+      <div id="dialogText" class="dialog-text"></div>
+      <button id="dialogNextBtn" class="dialog-next-btn">Next</button>
+    </div>
+  </div>
+
+  <!-- Lower-Right Controls: Settings & Exit with Hover Labels -->
+  <div class="bottom-right-controls">
+    <div class="hud-icon-wrap">
+      <span class="hud-hover-label">Settings</span>
+      <button id="settingBtn" class="hud-img-btn" type="button" aria-label="Settings">
+        <img src="assets/icon/setting.png" alt="Settings" />
+      </button>
+    </div>
+
+    <div class="hud-icon-wrap">
+      <span class="hud-hover-label label-danger">Abort Mission</span>
+      <button id="exitBtn" class="hud-img-btn" type="button" aria-label="Exit to Main Menu">
+        <img src="assets/icon/exit.png" alt="Exit" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal (Background Music On/Off) -->
+  <div id="settingsModal" class="custom-popup-modal" role="dialog" aria-labelledby="settingsModalTitle">
+    <h3 id="settingsModalTitle" class="popup-modal-title">⚙️ Cockpit Settings</h3>
+    <div class="settings-row">
+      <span>Background Music</span>
+      <button id="musicToggleBtn" type="button" class="music-toggle-btn is-on" aria-label="Turn background music off" aria-pressed="true">
+        <img id="musicToggleIcon" src="assets/icon/bg-on.png" alt="Music on" />
+      </button>
+    </div>
+    <div class="settings-row volume-settings-row">
+      <label for="musicVolume">Volume</label>
+      <input id="musicVolume" type="range" min="0" max="100" value="50" />
+      <span id="musicVolumeValue">50%</span>
+    </div>
+    <button id="closeSettingsBtn" type="button" class="close-detail-btn">Close</button>
+  </div>
+
+  <!-- Exit / Mission Abort Confirmation Modal -->
+  <div id="exitConfirmModal" class="custom-popup-modal modal-danger" role="dialog" aria-labelledby="exitConfirmTitle">
+    <h3 id="exitConfirmTitle" class="popup-modal-title">⚠️ Confirm Mission Abort?</h3>
+    <p class="popup-modal-desc">
+      Are you sure you want to abort your current Artemis South Pole mission and return to the Main Menu?
+    </p>
+    <div class="popup-modal-actions">
+      <button id="confirmAbortBtn" type="button" class="abort-confirm-btn">Yes, Abort Mission</button>
+      <button id="cancelAbortBtn" type="button" class="secondary-btn">Stay on Mission</button>
+    </div>
+  </div>
+
+  <!-- Ice Drill Mini-game -->
+  <!-- Ice Drill Mini-game: Lunar Radar & Stratigraphy Puzzle -->
+  <section id="iceDrillGame" class="drill-game-overlay" aria-labelledby="drillGameTitle" aria-hidden="true">
+    
+    <!-- STEP 1: HOW TO PLAY TUTORIAL MODAL (Shown before playing) -->
+    <div class="drill-tutorial-panel" id="drillTutorialPanel">
+      <div class="drill-topline">
+        <span class="drill-kicker">MISSION SIMULATION / 01 // BRIEFING</span>
+        <span class="drill-round">AGES 7–12 BRAIN LAB</span>
+      </div>
+      <h2>🧊 HOW TO PLAY: LUNAR ICE DRILL</h2>
+      <p class="drill-intro">
+        Deep inside <strong>Shackleton Crater</strong> at the Moon's South Pole, ancient water ice is hidden underground! 
+        Use NASA radar clues to find the <strong>Pure Ice Cores</strong> without hitting hard volcanic boulders.
+      </p>
+
+      <div class="drill-howto-grid">
+        <div class="drill-howto-card">
+          <div class="drill-howto-icon">📡</div>
+          <strong>1. Read the Radar Clues</strong>
+          <p>Look at the <strong>Radar Numbers</strong> above each column. Higher Hydrogen % means water ice is buried in that column!</p>
+        </div>
+        <div class="drill-howto-card">
+          <div class="drill-howto-icon">🔍</div>
+          <strong>2. Scan Underground</strong>
+          <p>Click any underground block to use a <strong>Radar Ping</strong> (you get 2 free scans per round) to peek before you drill.</p>
+        </div>
+        <div class="drill-howto-card">
+          <div class="drill-howto-icon">🛠️</div>
+          <strong>3. Aim &amp; Drill!</strong>
+          <p>Select a target block and press <strong>DEPLOY DRILL</strong>. Find 🧊 <strong>Pure Ice</strong> and avoid 🪨 <strong>Basalt Rocks</strong>!</p>
+        </div>
+      </div>
+
+      <div class="drill-science-tip">
+        <span>🛰️ <strong>NASA Fact:</strong></span>
+        <p>NASA's real <strong>TRIDENT drill</strong> uses a percussive auger to bore 1 meter into the Moon and bring up ice samples that have been frozen in darkness for billions of years!</p>
+      </div>
+
+      <div class="drill-actions">
+        <button type="button" class="drill-lock-btn" id="startDrillPlayBtn">🚀 START DRILLING MISSION</button>
+        <button type="button" class="drill-cancel-btn" id="cancelDrillFromTutBtn">EXIT</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: ACTIVE GAMEPLAY PANEL -->
+    <div class="drill-game-panel" id="drillGamePanel" hidden>
+      <div class="drill-topline">
+        <span class="drill-kicker">MISSION SIMULATION / 01</span>
+        <span class="drill-round" id="drillRound">EXCAVATION SITE 1 / 3</span>
+      </div>
+      <div class="drill-header-row">
+        <h2 id="drillGameTitle">SHACKLETON CRATER RADAR DRILL</h2>
+        <button type="button" class="drill-help-pill" id="openDrillHelpBtn" title="How to Play">❓ How to Play</button>
+      </div>
+      <p class="drill-intro" id="drillMissionSub">Use the Hydrogen Radar clues and your 2 Radar Pings to locate the Pure Ice Core!</p>
+
+      <!-- Stats Bar -->
+      <div class="drill-stats">
+        <div><span>RADAR PINGS LEFT</span><strong id="drillScansLeft">2 📡</strong></div>
+        <div><span>DRILL BIT HEALTH</span><strong id="coreIntegrity">100%</strong></div>
+        <div><span>ICE CORES FOUND</span><strong id="drillScore">0 / 3</strong></div>
+      </div>
+
+      <!-- Animated Rig + Underground Crater Grid -->
+      <div class="crater-excavation-stage">
+        <!-- Surface Track & Animated Moving Drill Rig -->
+        <div class="crater-surface-sky">
+          <div class="drill-scene-label">VIPER ROVER // TRIDENT DRILL RIG</div>
+          <div class="drill-rig-mover" id="drillRigMover" style="left: 12.5%;">
+            <div class="drill-rig-cabin">
+              <span class="drill-status-light" id="drillStatusLight"></span>
+              <span class="drill-rig-eye">🛰️</span>
+            </div>
+            <div class="drill-rig-wheels"><span></span><span></span></div>
+            <div class="drill-auger-rod" id="drillAugerRod"></div>
+          </div>
+          <div class="crater-surface-ground"></div>
+          <div class="drill-fx-burst" id="drillFxBurst"></div>
+        </div>
+
+        <!-- Column Radar Clues -->
+        <div class="radar-clue-row" id="radarClueRow" aria-label="Column hydrogen radar readings"></div>
+
+        <!-- 4x2 Underground Strata Grid -->
+        <div class="underground-grid" id="undergroundGrid" role="grid" aria-label="Underground lunar soil grid"></div>
+      </div>
+
+      <!-- Optional Brain-Booster Science Question Popup inside Panel -->
+      <div class="drill-quiz-box" id="drillQuizBox" hidden>
+        <div class="drill-quiz-badge">🧠 BRAIN-BOOSTER BONUS (+15% SCORE)</div>
+        <p class="drill-quiz-q" id="drillQuizQuestion"></p>
+        <div class="drill-quiz-options" id="drillQuizOptions"></div>
+      </div>
+
+      <p class="drill-instruction" id="drillInstruction" aria-live="polite">
+        Tap a tile once to <strong>SCAN (📡)</strong> it, or select a tile and press <strong>DEPLOY DRILL</strong>!
+      </p>
+
+      <div class="drill-actions">
+        <button type="button" class="drill-scan-btn" id="scanTileBtn">📡 RADAR SCAN TILE (2)</button>
+        <button type="button" class="drill-lock-btn" id="lockDrillBtn">⚙️ DEPLOY DRILL HERE</button>
+        <button type="button" class="drill-cancel-btn" id="cancelDrillBtn">ABORT</button>
+      </div>
+
+      <div class="drill-progress" aria-label="Excavation stages">
+        <span class="active"></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- STEP 3: FINAL RESULT PANEL -->
+    <div class="drill-result-panel" id="drillResultPanel" hidden aria-live="polite">
+      <div class="drill-result-icon" id="drillResultIcon">🧊</div>
+      <p class="drill-kicker">SHACKLETON EXCAVATION REPORT</p>
+      <h2 id="drillResultTitle">CORE SECURED</h2>
+      <p id="drillResultText"></p>
+      <div class="drill-result-score">
+        <span>FINAL EXTRACTION EFFICIENCY</span>
+        <strong id="drillFinalScore">0%</strong>
+      </div>
+      <button type="button" class="drill-lock-btn" id="finishDrillBtn">RETURN TO BASE 🚀</button>
+    </div>
+  </section>
+
+  <!-- Mission 2: Pipe Connection Puzzle -->
+  <section id="waterMeltGame" class="water-game-overlay" aria-labelledby="waterGameTitle" aria-hidden="true">
+
+    <!-- STEP 1: HOW TO PLAY TUTORIAL PANEL (Shown before playing) -->
+    <div class="water-tutorial-panel" id="waterTutorialPanel">
+      <div class="water-topline">
+        <span>MISSION SIMULATION / 02 // BRIEFING</span>
+        <span>MULTI-PATH PIPE PUZZLE</span>
+      </div>
+      <h2>💧 HOW TO PLAY: FIX THE WATER PIPES!</h2>
+      <p class="water-intro">
+        Help the Moon Base melt and filter lunar ice into clean drinking water! There is <strong>more than one way</strong> to connect the pipes—brainstorm the smartest route using the <strong>fewest turns</strong>!
+      </p>
+
+      <div class="water-howto-grid">
+        <div class="water-howto-card">
+          <div class="water-howto-icon">🔄</div>
+          <strong>1. Tap to Rotate</strong>
+          <p>Tap any pipe tile to turn it 90°. Connect the <strong>🧊 ICE (Start)</strong> on the left to <strong>💧 WATER (Goal)</strong> on the right.</p>
+        </div>
+        <div class="water-howto-card">
+          <div class="water-howto-icon">🧠</div>
+          <strong>2. Multiple Solutions!</strong>
+          <p>Each board has a <strong>Short Upper Route</strong> and a <strong>Longer Lower Route</strong>. Look at the starting pieces to pick the path that needs fewer turns!</p>
+        </div>
+        <div class="water-howto-card">
+          <div class="water-howto-icon">📈</div>
+          <strong>3. Fewer Turns = More +% Water</strong>
+          <p>Every extra rotation lowers your <strong>Efficiency %</strong>. Finishing at or near the <strong>Target Turns</strong> gives your base the highest <strong>+% Water</strong> boost!</p>
+        </div>
+      </div>
+
+      <div class="water-science-tip">
+        <span>🛰️ <strong>Efficiency Tip:</strong></span>
+        <p>Before tapping, count how many turns the <strong>top row</strong> needs versus the <strong>bottom row</strong>. Choosing the path that is already mostly aligned saves turns and maximizes your water recovery!</p>
+      </div>
+
+      <div class="water-actions">
+        <button type="button" class="water-melt-btn" id="startWaterPlayBtn">🚀 START PIPE MISSION</button>
+        <button type="button" class="water-cancel-btn" id="cancelWaterFromTutBtn">EXIT</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: ACTIVE GAMEPLAY PANEL -->
+    <div class="water-game-panel pipe-game-panel" id="waterGamePanel" hidden>
+      <div class="water-topline">
+        <span>MISSION SIMULATION / 02</span>
+        <span id="waterRound">PUZZLE 1 / 3</span>
+      </div>
+      <div class="water-header-row">
+        <h2 id="waterGameTitle">FIX THE WATER PIPES!</h2>
+        <button type="button" class="water-help-pill" id="openWaterHelpBtn" title="How to Play">❓ How to Play</button>
+      </div>
+      <p class="water-intro">Tap a pipe to turn it. Multiple paths work—connect ICE to WATER in the <strong>fewest turns</strong> for maximum +% Water!</p>
+
+      <div class="pipe-scene">
+        <div class="pipe-station"><div class="pipe-station-icon">🧊</div><strong>ICE</strong><span>START</span></div>
+        <div class="pipe-board-wrap"><div id="pipeBoard" class="pipe-board" aria-label="Pipe connection puzzle"></div></div>
+        <div class="pipe-station"><div class="pipe-station-icon">💧</div><strong>WATER</strong><span>GOAL</span></div>
+        <div class="pipe-flow" id="pipeFlow" aria-hidden="true">💦💦💦</div>
+      </div>
+
+      <div class="pipe-status-row">
+        <div><span>CONNECTED PIPES</span><strong id="pipeConnected">1 / 4+</strong></div>
+        <div><span id="pipeTargetLabel">ROTATIONS (TARGET: --)</span><strong id="pipeMoves">0</strong></div>
+        <div><span>EFFICIENCY RATE</span><strong id="pipeTank">100%</strong></div>
+      </div>
+
+      <p class="water-instruction" id="waterInstruction" aria-live="polite">Tap the pipe pieces to rotate them until they connect from ICE to WATER.</p>
+      <div class="water-actions">
+        <button type="button" class="water-melt-btn" id="pipeCheckBtn">💦 CHECK WATER FLOW</button>
+        <button type="button" class="water-cancel-btn" id="cancelWaterBtn">EXIT MISSION</button>
+      </div>
+      <div class="water-progress" id="waterProgress"><i class="active"></i><i></i><i></i></div>
+    </div>
+
+    <!-- STEP 3: FINAL RESULT PANEL -->
+    <div class="water-result-panel" id="waterResultPanel" hidden aria-live="polite">
+      <div class="water-result-emoji" id="waterResultEmoji">🏆💧</div>
+      <p class="water-kicker">MISSION COMPLETE</p>
+      <h2 id="waterResultTitle">WATER SYSTEM RESTORED!</h2>
+      <p id="waterResultText"></p>
+      <div class="water-final-score">
+        FINAL EFFICIENCY SCORE (DETERMINES +% WATER)
+        <strong id="waterFinalScore">0%</strong>
+      </div>
+      <button type="button" class="water-melt-btn" id="finishWaterBtn">RETURN TO BASE 🚀</button>
+    </div>
+  </section>
+
+  <!-- Mission 3: Align Solar Arrays (Memory Match) -->
+  <section id="solarAlignGame" class="solar-game-overlay" aria-labelledby="solarGameTitle" aria-hidden="true">
+
+    <!-- STEP 1: HOW TO PLAY TUTORIAL PANEL (Shown before playing) -->
+    <div class="solar-tutorial-panel" id="solarTutorialPanel">
+      <div class="solar-topline">
+        <span>MISSION SIMULATION / 03 // BRIEFING</span>
+        <span>SOLAR TELEMETRY LAB</span>
+      </div>
+      <h2>☀️ HOW TO PLAY: SOLAR ARRAY ALIGNMENT</h2>
+      <p class="solar-intro">
+        At the Moon's South Pole, the Sun skims right along the horizon! Memorize the grid during the <strong>Radar Preview</strong> and match all <strong>4 Solar System Pairs</strong> in the fewest flips to maximize your <strong>+% Outpost Power</strong>!
+      </p>
+
+      <div class="solar-howto-grid">
+        <div class="solar-howto-card">
+          <div class="solar-howto-icon">👀</div>
+          <strong>1. Watch the Quick Preview!</strong>
+          <p>When each round starts, all 8 nodes briefly reveal their symbols for <strong>2 seconds</strong>. Memorize where the matching pair codes are!</p>
+        </div>
+        <div class="solar-howto-card">
+          <div class="solar-howto-icon">🔗</div>
+          <strong>2. Match Linked Solar Pairs</strong>
+          <p>Match cards with the same <strong>Pair Code</strong>: <br/>
+            <strong>[A]</strong> ☀️ Sun + 🪞 Mirror &nbsp;|&nbsp; <strong>[B]</strong> 📐 Tilt + 🗼 Tower<br/>
+            <strong>[C]</strong> ⚡ PV Cell + 🔋 Battery &nbsp;|&nbsp; <strong>[D]</strong> 🛰️ Beam + 🛡️ Breaker
+          </p>
+        </div>
+        <div class="solar-howto-card">
+          <div class="solar-howto-icon">⚡</div>
+          <strong>3. Fewer Flips = More +% Power</strong>
+          <p>Every extra mismatch flip lowers your <strong>Beam Efficiency %</strong>. You also get <strong>1 Free Horizon Peek</strong> if you get stuck!</p>
+        </div>
+      </div>
+
+      <div class="solar-science-tip">
+        <span>🛰️ <strong>NASA Fact:</strong></span>
+        <p>Because the Moon only tilts <strong>1.5°</strong> on its axis, tall peaks near Shackleton Crater receive almost non-stop horizon sunlight—making vertical solar towers the ultimate lunar power plant!</p>
+      </div>
+
+      <div class="solar-actions">
+        <button type="button" class="solar-reset-btn" id="startSolarPlayBtn">🚀 START SOLAR ALIGNMENT</button>
+        <button type="button" class="solar-cancel-btn" id="cancelSolarFromTutBtn">EXIT</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: ACTIVE GAMEPLAY PANEL -->
+    <div class="solar-game-panel" id="solarGamePanel" hidden>
+      <div class="solar-topline">
+        <span>MISSION SIMULATION / 03</span>
+        <span id="solarMatches">TOWERS ONLINE: 0 / 4</span>
+      </div>
+      <div class="solar-header-row">
+        <h2 id="solarGameTitle">SOUTH POLE SOLAR ARRAY ALIGNMENT</h2>
+        <button type="button" class="solar-help-pill" id="openSolarHelpBtn" title="How to Play">❓ How to Play</button>
+      </div>
+      <p class="solar-intro">Memorize the nodes during the preview! Match the 4 linked <strong>Pair Codes (A, B, C, D)</strong> in the fewest flips.</p>
+
+      <!-- Animated Solar Towers Visual Stage -->
+      <div class="solar-tower-stage" aria-hidden="true">
+        <div class="solar-sun-orb" id="solarSunOrb">☀️</div>
+        <div class="solar-towers-row" id="solarTowersRow">
+          <div class="solar-tower-unit" data-tower="0"><span>🗼</span><small>ARRAY A</small></div>
+          <div class="solar-tower-unit" data-tower="1"><span>🗼</span><small>ARRAY B</small></div>
+          <div class="solar-tower-unit" data-tower="2"><span>🗼</span><small>ARRAY C</small></div>
+          <div class="solar-tower-unit" data-tower="3"><span>🗼</span><small>ARRAY D</small></div>
+        </div>
+      </div>
+
+      <div class="solar-stats">
+        <div><span>FLIPS (OPTIMAL: 4–5)</span><strong id="solarFlips">0</strong></div>
+        <div><span>HORIZON PEEK LEFT</span><strong id="solarPeekCount">1 👁️</strong></div>
+        <div><span>BEAM EFFICIENCY</span><strong id="solarEfficiency">100%</strong></div>
+      </div>
+
+      <div id="solarMemoryGrid" class="solar-memory-grid" aria-label="Solar node memory grid"></div>
+
+      <p class="solar-instruction" id="solarInstruction" aria-live="polite">Watch closely! Previewing South Pole solar nodes...</p>
+      <div class="solar-actions">
+        <button type="button" class="solar-peek-btn" id="solarPeekBtn">👁️ HORIZON PEEK (1)</button>
+        <button type="button" class="solar-reset-btn" id="solarResetBtn">🔄 SHUFFLE NODES</button>
+        <button type="button" class="solar-cancel-btn" id="cancelSolarBtn">ABORT</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: FINAL RESULT PANEL -->
+    <div class="solar-result-panel" id="solarResultPanel" hidden aria-live="polite">
+      <div class="solar-result-icon" id="solarResultIcon">☀️</div>
+      <p class="solar-kicker">ARRAY TELEMETRY REPORT</p>
+      <h2 id="solarResultTitle">ARRAYS ALIGNED</h2>
+      <p id="solarResultText"></p>
+      <div class="solar-result-score">
+        <span>ALIGNMENT EFFICIENCY (DETERMINES +% POWER)</span>
+        <strong id="solarFinalScore">0%</strong>
+      </div>
+      <button type="button" class="solar-reset-btn" id="finishSolarBtn">RETURN TO BASE 🚀</button>
+    </div>
+  </section>
+
+  <script src="game.js"></script>
+  <script src="drill-game.js"></script>
+  <script src="water-game.js"></script>
+  <script src="solar-game.js"></script>
+</body>
+</html>

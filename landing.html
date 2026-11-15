@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLARIS by Team Hyperion — Where Real Astronomy Meets Interactive Play | NASA Space Apps</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Instrument Serif, Playfair Display & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Instrument Serif"', '"Playfair Display"', 'Georgia', 'serif'],
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        stoneWarm: '#F4F3EF',
+                        stoneCard: '#ECEAE4',
+                        ink: '#141413',
+                        mutedInk: '#6E6D68',
+                        nasaBlue: '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFFFFF;
+            color: #141413;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .editorial-heading {
+            font-family: 'Instrument Serif', 'Playfair Display', serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* Subtle card hover transitions */
+        .editorial-card {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .editorial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -15px rgba(20, 20, 19, 0.08);
+        }
+
+        .landing-intro-section {
+            position: relative;
+            isolation: isolate;
+        }
+        .landing-intro-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 100vw;
+            transform: translateX(-50%);
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.70);
+            pointer-events: none;
+        }
+        .landing-intro-background {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            z-index: -2;
+            width: 100vw;
+            max-width: none;
+            height: 100%;
+            transform: translateX(-50%);
+            object-fit: cover;
+            opacity: 1;
+            filter: saturate(0.65);
+            pointer-events: none;
+        }
+        .video-gallery-track {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            overscroll-behavior-x: contain;
+            scrollbar-width: none;
+            touch-action: pan-x;
+        }
+        .video-gallery-track::-webkit-scrollbar {
+            display: none;
+        }
+        .video-gallery-slide {
+            flex: 0 0 100%;
+            min-width: 0;
+            scroll-snap-align: start;
+        }
+        .video-gallery-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #d1cfc7;
+            transition: width 0.2s ease, background-color 0.2s ease;
+        }
+        .video-gallery-dot[aria-current="true"] {
+            width: 22px;
+            background: #141413;
+        }
+        .video-gallery-nav:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        /* Custom subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4F3EF;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D1CFC7;
+            border-radius: 999px;
+        }
+
+        /* Tab transition */
+        .tab-fade-enter {
+            animation: fadeInSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Floating animation for scattered mission gallery */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .float-slow {
+            animation: gentleFloat 6s ease-in-out infinite;
+        }
+        .float-delayed {
+            animation: gentleFloat 7.5s ease-in-out 2s infinite;
+        }
+
+        /* Smooth Accordion Transition for Netflix-style Q&A */
+        .faq-answer-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .faq-item[data-open="true"] .faq-answer-wrapper {
+            grid-template-rows: 1fr;
+        }
+        .faq-answer-inner {
+            overflow: hidden;
+        }
+        .faq-icon {
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .faq-item[data-open="true"] .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        /* Active Nav Link Indicator */
+        .nav-link-active {
+            color: #141413;
+        }
+        .nav-link-active::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+            height: 1.5px;
+            background-color: #141413;
+        }
+        .nav-link-inactive {
+            color: #6E6D68;
+        }
+        .nav-link-inactive:hover {
+            color: #141413;
+        }
+    </style>
+</head>
+<body class="selection:bg-ink selection:text-white">
+
+    <!-- ==================== 1. HEADER / NAVIGATION BAR ==================== -->
+    <!-- Logo in the TOP-LEFT corner, strictly 2 nav links (Home, About Us), NO login/signup -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-stone-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+            
+            <!-- Top Left Corner: Custom Multi-Gradient Solaris Emblem + Wordmark -->
+            <button type="button" onclick="switchPageView('home')" class="flex items-center gap-2.5 sm:gap-3 group focus:outline-none cursor-pointer text-left min-w-0" aria-label="Solaris by Team Hyperion Home">
+                <!-- Custom SVG Recreation of the Uploaded Solaris Logo -->
+                <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#07080E] p-1 flex items-center justify-center shadow-md ring-1 ring-stone-900/15 group-hover:scale-105 transition-transform shrink-0">
+                    <svg class="w-full h-full" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Outer Ring Gradient: Golden Amber (top-left) -> Cyan & Violet (bottom-right) -->
+                            <linearGradient id="solarisOuterRing" x1="15" y1="15" x2="105" y2="105" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#FDE047"/>
+                                <stop offset="35%" stop-color="#F59E0B"/>
+                                <stop offset="68%" stop-color="#38BDF8"/>
+                                <stop offset="100%" stop-color="#7C3AED"/>
+                            </linearGradient>
+                            <!-- Inner Solar Sphere Gradient -->
+                            <linearGradient id="solarisSphere" x1="22" y1="25" x2="88" y2="92" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#FDE047"/>
+                                <stop offset="40%" stop-color="#EA580C"/>
+                                <stop offset="78%" stop-color="#311042"/>
+                                <stop offset="100%" stop-color="#1E1B4B"/>
+                            </linearGradient>
+                            <!-- Cosmic Interior Gradient -->
+                            <radialGradient id="solarisCosmicBg" cx="62%" cy="62%" r="52%">
+                                <stop offset="0%" stop-color="#3B215D"/>
+                                <stop offset="65%" stop-color="#1A1638"/>
+                                <stop offset="100%" stop-color="#0B0A18"/>
+                            </radialGradient>
+                            <!-- Swooshing Planetary Ring / Trajectory Gradient -->
+                            <linearGradient id="solarisSwoosh" x1="12" y1="94" x2="104" y2="18" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#EA580C"/>
+                                <stop offset="35%" stop-color="#FBBF24"/>
+                                <stop offset="70%" stop-color="#7DD3FC"/>
+                                <stop offset="100%" stop-color="#FDE047"/>
+                            </linearGradient>
+                            <!-- Central 8-Point Star Gradient -->
+                            <radialGradient id="solarisCenterStar" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                <stop offset="32%" stop-color="#FEF08A"/>
+                                <stop offset="75%" stop-color="#F59E0B"/>
+                                <stop offset="100%" stop-color="#D97706" stop-opacity="0"/>
+                            </radialGradient>
+                            <!-- Observatory Cyan Gradient -->
+                            <linearGradient id="solarisDome" x1="65" y1="62" x2="90" y2="102" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#67E8F9"/>
+                                <stop offset="55%" stop-color="#38BDF8"/>
+                                <stop offset="100%" stop-color="#8B5CF6"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Outer Circular Arc -->
+                        <circle cx="60" cy="60" r="46" stroke="url(#solarisOuterRing)" stroke-width="4.2"/>
+
+                        <!-- Inner Cosmic Disc -->
+                        <circle cx="60" cy="60" r="39" fill="url(#solarisCosmicBg)"/>
+
+                        <!-- Inner Golden-Orange Solar Crescent on Left -->
+                        <path d="M60 21 A39 39 0 1 0 60 99 A31 36 0 1 1 60 21 Z" fill="url(#solarisSphere)" opacity="0.92"/>
+                        <circle cx="58" cy="60" r="34" stroke="url(#solarisOuterRing)" stroke-width="1.2" stroke-opacity="0.45"/>
+
+                        <!-- Futuristic Cyan Observatory Dome & Tower Silhouette (Bottom Right) -->
+                        <g opacity="0.96">
+                            <!-- Observatory Base Building -->
+                            <path d="M63 97 V87 C63 83.5 65.5 81 69 81 H79 V97 H63 Z" fill="url(#solarisDome)"/>
+                            <!-- Dark Arch Cutout -->
+                            <path d="M66.5 97 V89.5 A2.8 2.8 0 0 1 72.1 89.5 V97 H66.5 Z" fill="#131129"/>
+                            <!-- Observatory Main Dome -->
+                            <path d="M67 80 A7.5 7.5 0 0 1 82 80 Z" fill="url(#solarisDome)"/>
+                            <!-- Tall Telescope Tower on Right -->
+                            <rect x="78.5" y="69" width="6.5" height="27" rx="1" fill="url(#solarisDome)"/>
+                            <path d="M77.5 69 A4.2 4.2 0 0 1 86 69 Z" fill="#67E8F9"/>
+                            <!-- Antenna Spire -->
+                            <line x1="81.75" y1="60" x2="81.75" y2="65.5" stroke="#67E8F9" stroke-width="1.6" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Diagonal Rocket / Star Trail Beam -->
+                        <path d="M52 58 L95 19 L101 25 L62 66 Z" fill="url(#solarisSwoosh)" opacity="0.55"/>
+
+                        <!-- Central Radiant 8-Point Golden Star -->
+                        <g>
+                            <!-- Diagonal Flares -->
+                            <polygon points="56,60 44,44 60,56 76,44 64,60 76,76 60,64 44,76" fill="#F59E0B" opacity="0.85"/>
+                            <!-- Long Vertical & Horizontal Rays -->
+                            <polygon points="60,24 63.8,55.2 92,60 63.8,64.8 60,95 56.2,64.8 28,60 56.2,55.2" fill="#FDE047"/>
+                            <!-- Bright Hot Core -->
+                            <circle cx="60" cy="60" r="6.5" fill="#FFFFFF"/>
+                        </g>
+
+                        <!-- Dynamic Diagonal Swooshing Planetary Ring (Bottom-Left to Top-Right) -->
+                        <path d="M24 72 C10 88, 16 96, 38 89 C60 82, 82 62, 98 34" stroke="url(#solarisSwoosh)" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+                        <path d="M18 89 C36 93, 68 74, 96 42" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.85"/>
+
+                        <!-- Top-Right 5-Point Golden Star Breaking Out of the Rim -->
+                        <polygon points="103,11 105.5,18.5 113.5,17.5 107.5,23 110,30.5 103,26.5 96,30.5 98.5,23 92.5,17.5 100.5,18.5" fill="#FDE047" stroke="#EA580C" stroke-width="0.8"/>
+                    </svg>
+                </div>
+
+                <!-- Brand Name & Team Hyperion Subtitle (Single-line responsive on mobile) -->
+                <div class="flex flex-col items-start min-w-0">
+                    <span class="editorial-heading text-xl sm:text-[28px] leading-none tracking-tight text-ink font-normal truncate">
+                        Solaris
+                    </span>
+                    <span class="text-[9px] sm:text-[10px] uppercase tracking-[0.14em] text-mutedInk font-semibold whitespace-nowrap block mt-0.5">
+                        TEAM HYPERION <span class="hidden sm:inline">• NASA SPACE APPS</span>
+                    </span>
+                </div>
+            </button>
+
+            <!-- Right: Strictly 2 clean navigation links (Home, About Us) and NO login/signup -->
+            <nav aria-label="Primary Navigation" class="flex items-center gap-5 sm:gap-9 shrink-0">
+                <button type="button" onclick="switchPageView('home')" id="nav-home" class="text-sm sm:text-base font-medium transition-colors py-2 relative cursor-pointer whitespace-nowrap shrink-0 nav-link-active">
+                    Home
+                </button>
+                <button type="button" onclick="switchPageView('about')" id="nav-about" class="text-sm sm:text-base font-medium transition-colors py-2 relative cursor-pointer whitespace-nowrap shrink-0 nav-link-inactive">
+                    About Us
+                </button>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- ==================== VIEW 1: HOME PAGE ==================== -->
+    <main id="page-home" class="tab-fade-enter">
+        <section class="landing-intro-section pt-10 sm:pt-16 md:pt-20 pb-10 sm:pb-16 px-4 sm:px-8 max-w-6xl mx-auto">
+            <video class="landing-intro-background" src="assets/video/intro-background.mp4" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+            <div class="relative z-10">
+            <!-- Eyebrow Tag -->
+            <div class="text-center mb-4">
+                <span class="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-mutedInk bg-stoneWarm px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                    <span>SOLARIS • TEAM HYPERION <span class="hidden sm:inline">• NASA SPACE APPS 2026</span></span>
+                </span>
+            </div>
+
+            <!-- Centered Editorial Serif Headline -->
+            <h1 class="editorial-heading text-3xl sm:text-5xl md:text-6xl lg:text-[68px] text-center text-ink leading-[1.08] max-w-3xl mx-auto font-normal text-balance">
+                Where cosmic curiosity<br class="hidden sm:inline"> meets interactive exploration
+            </h1>
+
+            <!-- Two Side-by-Side Feature Cards ('For Astronomy' & 'For Game') -->
+            <div class="mt-8 sm:mt-14 grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
+                
+                <!-- LEFT CARD: For Astronomy (Interesting & Educational Facts) -->
+                <div class="editorial-card bg-stoneWarm rounded-3xl p-5 sm:p-7 md:p-8 flex flex-col justify-between border border-stone-200/60">
+                    <div class="flex items-start justify-between gap-3 mb-5 sm:mb-6">
+                        <div class="min-w-0">
+                            <p class="text-xs font-medium text-mutedInk mb-1">For Astronomy</p>
+                            <h2 class="text-base sm:text-xl font-medium text-ink tracking-tight leading-snug">
+                                Bite-sized wonders of our cosmos
+                            </h2>
+                        </div>
+                        <button onclick="switchTabAndScroll('astronomy')" class="shrink-0 whitespace-nowrap bg-ink hover:bg-stone-800 text-white text-xs font-medium px-4 py-2.5 rounded-full transition-all shadow-sm cursor-pointer">
+                            Explore Facts
+                        </button>
+                    </div>
+
+                    <!-- Interactive UI Preview Mockup: Cosmic Fact of the Moment Switcher -->
+                    <div class="bg-white rounded-2xl p-3.5 sm:p-5 shadow-[0_2px_16px_rgba(0,0,0,0.03)] border border-stone-100">
+                        <div class="flex items-center justify-between gap-2 border-b border-stone-100 pb-3 mb-3">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                                <span class="text-[11px] font-medium text-ink truncate">Cosmic Fact of the Moment</span>
+                            </div>
+                            <button type="button" onclick="nextCosmicFact()" class="text-[10px] font-medium text-nasaBlue hover:underline bg-blue-50 px-2.5 py-0.5 rounded-full shrink-0 cursor-pointer">
+                                Next Fact ↻
+                            </button>
+                        </div>
+
+                        <!-- Interactive Educational Fact Selector Rows -->
+                        <div class="space-y-2">
+                            <div id="hero-fact-row-0" onclick="selectCosmicFact(0)" class="p-2.5 rounded-xl bg-stoneWarm/90 ring-1 ring-ink/10 hover:bg-stoneWarm transition-all cursor-pointer flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs shrink-0">☀️</div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-ink truncate">100,000-Year-Old Sunlight</p>
+                                        <p class="text-[10px] text-mutedInk truncate">Core to surface vs. 8m 20s to Earth</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-medium text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full shrink-0">8m 20s</span>
+                            </div>
+
+                            <div id="hero-fact-row-1" onclick="selectCosmicFact(1)" class="p-2.5 rounded-xl bg-white hover:bg-stoneWarm/70 border border-stone-100 transition-all cursor-pointer flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-7 h-7 rounded-lg bg-stone-200 text-ink flex items-center justify-center text-xs shrink-0">🌕</div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-ink truncate">Eternal Lunar Footprints</p>
+                                        <p class="text-[10px] text-mutedInk truncate">No wind or rain to erase Apollo tracks</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-mono text-mutedInk shrink-0">10M+ Yrs</span>
+                            </div>
+
+                            <div id="hero-fact-row-2" onclick="selectCosmicFact(2)" class="p-2.5 rounded-xl bg-white hover:bg-stoneWarm/70 border border-stone-100 transition-all cursor-pointer flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-7 h-7 rounded-lg bg-stone-200 text-ink flex items-center justify-center text-xs shrink-0">🪐</div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-ink truncate">Martian Blue Sunsets</p>
+                                        <p class="text-[10px] text-mutedInk truncate">Fine iron-oxide dust scatters blue light</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-mono text-nasaBlue bg-blue-50 px-2 py-0.5 rounded-full shrink-0">Blue Glow</span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Educational Fact Readout -->
+                        <div id="astro-card-readout" class="mt-3 pt-2.5 border-t border-stone-100 text-[11px] text-ink/90 leading-relaxed">
+                            <span class="font-semibold text-ink">Did you know?</span> A photon takes ~100,000 years to bounce from the Sun's dense core to its surface, then just 8 minutes 20 seconds to reach Earth.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT CARD: For Game (Direct Showcase & Link to index.html) -->
+                <div class="editorial-card bg-stoneWarm rounded-3xl p-5 sm:p-7 md:p-8 flex flex-col justify-between border border-stone-200/60">
+                    <div class="flex items-start justify-between gap-3 mb-5 sm:mb-6">
+                        <div class="min-w-0">
+                            <p class="text-xs font-medium text-mutedInk mb-1">For Game</p>
+                            <h2 class="text-base sm:text-xl font-medium text-ink tracking-tight leading-snug">
+                                Survive the solar system in Solaris
+                            </h2>
+                        </div>
+                        <a href="index.html" class="shrink-0 whitespace-nowrap bg-ink hover:bg-stone-800 text-white text-xs font-medium px-4 py-2.5 rounded-full transition-all shadow-sm cursor-pointer inline-flex items-center gap-1.5">
+                            <span>Play Game</span>
+                            <span>→</span>
+                        </a>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div id="videoGalleryTrack" class="video-gallery-track rounded-2xl" aria-label="Solaris video gallery" tabindex="0">
+                            <figure class="video-gallery-slide">
+                                <video id="gameDemoVideo" src="assets/video/game-demo.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="Solaris game demo video" class="landing-gallery-video block w-full aspect-video rounded-2xl border border-stone-200 bg-black object-cover cursor-zoom-in"></video>
+                                <figcaption class="mt-2 text-[10px] font-medium text-mutedInk">Game Demo</figcaption>
+                            </figure>
+                            <figure class="video-gallery-slide">
+                                <video id="introBackgroundPreviewVideo" src="assets/video/intro-background.mp4" muted loop playsinline controls preload="metadata" aria-label="Solaris intro background video" class="landing-gallery-video block w-full aspect-video rounded-2xl border border-stone-200 bg-black object-cover cursor-zoom-in"></video>
+                                <figcaption class="mt-2 text-[10px] font-medium text-mutedInk">Intro Background</figcaption>
+                            </figure>
+                        </div>
+                        <div class="mt-3 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <button id="videoGalleryPrev" class="video-gallery-nav rounded-full border border-stone-300 px-3 py-1.5 text-[10px] font-medium text-ink hover:bg-white" type="button" aria-label="Previous video" disabled>Previous</button>
+                                <button id="videoGalleryNext" class="video-gallery-nav rounded-full border border-stone-300 px-3 py-1.5 text-[10px] font-medium text-ink hover:bg-white" type="button" aria-label="Next video">Next</button>
+                            </div>
+                            <div class="flex items-center gap-2" role="group" aria-label="Choose a video">
+                                <button class="video-gallery-dot" type="button" data-gallery-index="0" aria-label="Show Game Demo" aria-current="true"></button>
+                                <button class="video-gallery-dot" type="button" data-gallery-index="1" aria-label="Show Intro Background" aria-current="false"></button>
+                            </div>
+                            <span id="videoGalleryStatus" class="text-[10px] font-medium text-mutedInk" aria-live="polite">1 / 2</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        
+            </div>
+        </section>
+
+        <!-- ==================== 3. INTERACTIVE TABBED SHOWCASE SECTION ==================== -->
+        <!-- Soft warm-gray rounded container section: 'For everyone exploring the cosmos' -->
+        <section id="showcase" class="px-3 sm:px-6 max-w-6xl mx-auto my-6 sm:my-8">
+            <div class="bg-stoneWarm rounded-[28px] sm:rounded-[40px] px-4 sm:px-12 md:px-16 py-12 sm:py-20 relative overflow-hidden">
+                
+                <!-- Centered Editorial Serif Heading -->
+                <div class="text-center max-w-xl mx-auto">
+                    <h2 class="editorial-heading text-3xl sm:text-5xl text-ink leading-[1.08] font-normal text-balance">
+                        For everyone exploring<br class="hidden sm:inline"> the cosmos
+                    </h2>
+
+                    <!-- Interactive Pill Toggle Switcher: 'Astronomy' vs 'Game' -->
+                    <div class="mt-6 sm:mt-7 inline-flex items-center bg-stoneCard p-1 rounded-full border border-stone-200/80 shadow-inner" role="tablist" aria-label="Feature Mode Switcher">
+                        <button 
+                            id="tab-btn-astronomy" 
+                            role="tab" 
+                            aria-selected="true"
+                            onclick="setShowcaseTab('astronomy')"
+                            class="px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all bg-white text-ink shadow-sm cursor-pointer whitespace-nowrap">
+                            Astronomy
+                        </button>
+                        <button 
+                            id="tab-btn-game" 
+                            role="tab" 
+                            aria-selected="false"
+                            onclick="setShowcaseTab('game')"
+                            class="px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all text-mutedInk hover:text-ink cursor-pointer whitespace-nowrap">
+                            Game
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Content Container (3 Vertical Feature Blocks) -->
+                <div id="showcase-content" class="mt-10 sm:mt-16 max-w-2xl mx-auto space-y-10 sm:space-y-16">
+                    <!-- Populated via JavaScript for clean dynamic switching -->
+                </div>
+
+                <!-- Bottom CTA inside the warm stone container -->
+                <div class="mt-12 sm:mt-20 pt-8 border-t border-stone-200/70 text-center">
+                    <h3 class="editorial-heading text-2xl sm:text-3xl text-ink mb-4 text-balance">
+                        Ready to launch Solaris into the unknown?
+                    </h3>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+                        <a href="index.html" class="w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-ink hover:bg-stone-800 text-white text-xs sm:text-sm font-medium px-6 py-3.5 rounded-full transition-all shadow-sm cursor-pointer">
+                            <span>Launch Solaris Game </span>
+                            <span>→</span>
+                        </a>
+                        <button type="button" onclick="setShowcaseTab(currentTab === 'astronomy' ? 'game' : 'astronomy')" class="w-full sm:w-auto justify-center bg-white hover:bg-stoneCard text-ink border border-stone-300/80 text-xs sm:text-sm font-medium px-5 py-3.5 rounded-full transition-all cursor-pointer">
+                            Switch Astronomy / Game View
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-mutedInk mt-3">
+                        Crafted by Team Hyperion • Free & open-source • Built with real NASA science
+                    </p>
+                </div>
+
+                <!-- Subtle confetti dots along bottom border matching reference aesthetic -->
+                <div class="absolute bottom-2 left-8 w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                <div class="absolute bottom-3 left-1/4 w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                <div class="absolute bottom-2 left-1/2 w-1.5 h-1.5 rounded-full bg-nasaBlue"></div>
+                <div class="absolute bottom-3 right-1/4 w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                <div class="absolute bottom-2 right-10 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
+            </div>
+        </section>
+
+        <!-- ==================== 4. STORIES / FIELD NOTES GRID (6 EXPANDABLE BLOCKS) ==================== -->
+        <section id="stories" class="py-12 sm:py-24 px-4 sm:px-8 max-w-6xl mx-auto">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8 sm:mb-12">
+                <div>
+                    <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-mutedInk block mb-2">Solaris Cosmic Field Notes</span>
+                    <h2 class="editorial-heading text-3xl sm:text-5xl text-ink font-normal leading-tight text-balance">
+                        Stories from our solar system
+                    </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-mutedInk max-w-xs">
+                    Tap any block to expand real NASA mission science and discover how it shapes Solaris gameplay.
+                </p>
+            </div>
+
+            <!-- 6 Expandable Article Blocks (3x2 on desktop, 2x3 on tablet, 1 col on mobile) -->
+            <div id="stories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-start">
+                <!-- Populated dynamically via JavaScript for clean inline expand/collapse -->
+            </div>
+        </section>
+
+        <!-- ==================== 5. NETFLIX-STYLE INTERACTIVE Q&A SECTION ==================== -->
+        <section id="faq" class="py-10 sm:py-20 px-4 sm:px-8 max-w-4xl mx-auto">
+            <div class="text-center mb-8 sm:mb-12">
+                <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-mutedInk block mb-2">Solaris Mission Briefing</span>
+                <h2 class="editorial-heading text-3xl sm:text-5xl text-ink font-normal leading-tight text-balance">
+                    Frequently asked questions
+                </h2>
+                <p class="text-xs sm:text-sm text-mutedInk mt-2.5">
+                    Everything you need to know about Solaris, Team Hyperion, NASA open datasets, and gameplay.
+                </p>
+            </div>
+
+            <!-- Netflix-Style Accordion Blocks -->
+            <div id="faq-container" class="space-y-3">
+                <!-- Populated via JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== VIEW 2: DEDICATED ABOUT US PAGE ==================== -->
+    <main id="page-about" class="hidden tab-fade-enter">
+        
+        <!-- 1. ABOUT US HERO SECTION -->
+        <section class="pt-10 sm:pt-16 md:pt-20 pb-10 sm:pb-16 px-4 sm:px-8 max-w-5xl mx-auto text-center">
+            <div class="mb-4">
+                <span class="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-mutedInk bg-stoneWarm px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                    <span>TEAM HYPERION • CREATORS OF SOLARIS</span>
+                </span>
+            </div>
+
+            <h1 class="editorial-heading text-3xl sm:text-5xl md:text-6xl lg:text-[66px] text-ink leading-[1.08] max-w-3xl mx-auto font-normal text-balance">
+                We are Team Hyperion, building<br class="hidden sm:inline"> Solaris for NASA Space Apps
+            </h1>
+
+            <p class="mt-4 sm:mt-5 text-sm sm:text-base text-mutedInk max-w-2xl mx-auto leading-relaxed">
+                <strong>Team Hyperion</strong> is a multidisciplinary crew of student developers, physics enthusiasts, and interactive storytellers turning raw NASA satellite telemetry into <strong>Solaris</strong>—a tactile browser spaceflight game with zero equations required to play.
+            </p>
+
+            <!-- Hackathon Metadata Pills (2x2 grid on mobile, row on desktop) -->
+            <div class="mt-7 sm:mt-8 grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 sm:gap-3">
+                <span class="text-[11px] sm:text-xs font-medium text-ink bg-stoneWarm border border-stone-200/80 px-3 py-2 sm:px-4 rounded-full whitespace-nowrap truncate">
+                    ⏱ 48-Hr Sprint
+                </span>
+                <span class="text-[11px] sm:text-xs font-medium text-ink bg-stoneWarm border border-stone-200/80 px-3 py-2 sm:px-4 rounded-full whitespace-nowrap truncate">
+                    🛰 2 NASA Related JSON Files
+                </span>
+                <span class="text-[11px] sm:text-xs font-medium text-ink bg-stoneWarm border border-stone-200/80 px-3 py-2 sm:px-4 rounded-full whitespace-nowrap truncate">
+                    ⚡ 60 FPS WebGL
+                </span>
+                <span class="text-[11px] sm:text-xs font-medium text-ink bg-stoneWarm border border-stone-200/80 px-3 py-2 sm:px-4 rounded-full whitespace-nowrap truncate">
+                    🌍 100% Open-Source
+                </span>
+            </div>
+        </section>
+
+        <!-- 2. OUR MISSION & VISION (DUAL EDITORIAL CARDS) -->
+        <section id="about-mission" class="py-4 sm:py-10 px-4 sm:px-8 max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
+                
+                <!-- Card 1: Our Mission -->
+                <div class="editorial-card bg-stoneWarm rounded-3xl p-5 sm:p-8 md:p-9 border border-stone-200/70 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-5 sm:mb-6">
+                            <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.14em] text-mutedInk">01 / Team Hyperion's Mission</span>
+                            <span class="text-[11px] font-medium text-ink bg-white px-3 py-1 rounded-full border border-stone-200 whitespace-nowrap shrink-0">Accessibility First</span>
+                        </div>
+                        <h2 class="editorial-heading text-2xl sm:text-4xl text-ink leading-tight mb-3.5 sm:mb-4 font-normal text-balance">
+                            Making lunar survival intuitive through Solaris
+                        </h2>
+                        <p class="text-xs sm:text-sm text-mutedInk leading-relaxed mb-3.5">
+                           Traditional space agency documents present lunar South Pole geology, thermodynamic phase changes, and space weather hazards as dense technical reports. Unless you already speak aerospace engineering, the reality of how astronauts survive on the Moon remains locked behind complex scientific jargon.
+                        </p>
+                        <p class="text-xs sm:text-sm text-mutedInk leading-relaxed">
+                            Our mission with <strong class="text-ink font-medium">Solaris</strong> is to make cryo-drilling at Shackleton Crater, vacuum water purification, and low-angle solar array alignment feel immediately tangible—so any student or curious explorer can experience how NASA navigates the extreme challenges of lunar exploration.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 sm:mt-8 pt-5 border-t border-stone-200/70 grid grid-cols-3 gap-2.5 sm:gap-3 text-center">
+                        <div class="bg-white rounded-2xl p-2.5 sm:p-3 border border-stone-100">
+                            <p class="editorial-heading text-xl sm:text-2xl text-ink">0</p>
+                            <p class="text-[9px] sm:text-[10px] text-mutedInk uppercase tracking-wider mt-0.5">Login Walls</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-2.5 sm:p-3 border border-stone-100">
+                            <p class="editorial-heading text-xl sm:text-2xl text-ink">100%</p>
+                            <p class="text-[9px] sm:text-[10px] text-mutedInk uppercase tracking-wider mt-0.5">NASA-GROUNDED</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-2.5 sm:p-3 border border-stone-100">
+                            <p class="editorial-heading text-xl sm:text-2xl text-ink">3</p>
+                            <p class="text-[9px] sm:text-[10px] text-mutedInk uppercase tracking-wider mt-0.5">CORE MINI-GAMES</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Why We Built It -->
+                <div class="editorial-card bg-stoneWarm rounded-3xl p-5 sm:p-8 md:p-9 border border-stone-200/70 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-5 sm:mb-6">
+                            <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.14em] text-mutedInk">02 / Why We Built Solaris</span>
+                            <span class="text-[11px] font-medium text-nasaBlue bg-blue-50 px-3 py-1 rounded-full border border-blue-100 whitespace-nowrap shrink-0">Science + Play</span>
+                        </div>
+                        <h2 class="editorial-heading text-2xl sm:text-4xl text-ink leading-tight mb-3.5 sm:mb-4 font-normal text-balance">
+                            Bridging complex space science and interactive education for young explorers
+                        </h2>
+                        <p class="text-xs sm:text-sm text-mutedInk leading-relaxed mb-3.5">
+                            During Team Hyperion's brainstorming session, we noticed that children either read dry static articles about lunar missions like Artemis or play sci-fi games that ignore real space physics altogether. Young learners miss out on understanding the actual challenges of surviving harsh cosmic environments.
+                        </p>
+                        <p class="text-xs sm:text-sm text-mutedInk leading-relaxed">
+                            We designed <strong class="text-ink font-medium">Solaris</strong> as an educational platform where children can explore how to handle extreme conditions—from managing vacuum thermodynamics to drilling ice in Shackleton Crater—through engaging, hands-on simulation gameplay that teaches them real space survival.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 sm:mt-8 pt-5 border-t border-stone-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white rounded-2xl p-4 border border-stone-100">
+                        <div>
+                            <p class="text-xs font-medium text-ink">Experience the Solaris </p>
+                            <p class="text-[11px] text-mutedInk">Launch our standalone HTML5 survival & astronomy build</p>
+                        </div>
+                        <a href="index.html" class="w-full sm:w-auto justify-center text-center shrink-0 bg-ink hover:bg-stone-800 text-white text-xs font-medium px-4 py-2.5 rounded-full transition cursor-pointer whitespace-nowrap inline-flex items-center gap-1">
+                            <span>Play Solaris</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. THE NASA SPACE APPS CHALLENGE WE TOOK ON (WARM STONE SHOWCASE CONTAINER) -->
+        <section id="about-challenge" class="px-3 sm:px-6 max-w-6xl mx-auto my-8 sm:my-10">
+            <div class="bg-stoneWarm rounded-[28px] sm:rounded-[40px] px-4 sm:px-12 md:px-16 py-12 sm:py-20 relative overflow-hidden border border-stone-200/60">
+                
+                <div class="max-w-3xl mx-auto text-center mb-10 sm:mb-12">
+                    <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-mutedInk block mb-2">Team Hyperion • The Challenge Statement</span>
+                    <h2 class="editorial-heading text-3xl sm:text-5xl text-ink leading-[1.08] font-normal text-balance">
+                        Challenges we took on &<br class="hidden sm:inline"> technical hurdles overcome
+                    </h2>
+                    <p class="mt-3 text-xs sm:text-sm text-mutedInk max-w-xl mx-auto leading-relaxed">
+                        <strong>Team Hyperion</strong> tackled the <strong class="text-ink font-medium">"Build a Junior Astronaut Mission Trainer"</strong>challenge track—transforming complex aerospace engineering and harsh-condition survival mechanics into the cohesive, accessible <strong>Solaris</strong> educational experience designed for young learners.
+                    </p>
+                </div>
+
+                <!-- 3 Key Technical Hurdles Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-8 sm:mb-12">
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-stone-100 shadow-[0_2px_16px_rgba(0,0,0,0.02)]">
+                        <div class="w-8 h-8 rounded-xl bg-stoneWarm text-ink flex items-center justify-center text-xs font-mono font-semibold mb-4">01</div>
+                        <h3 class="text-sm sm:text-base font-semibold text-ink mb-2">Shackleton Crater Cryo-Stratigraphy</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                            Translating complex planetary geology into intuitive puzzle mechanics, allowing children to safely extract ice core samples by tuning drill bit frequencies and managing equipment wear against abrasive regolith.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-stone-100 shadow-[0_2px_16px_rgba(0,0,0,0.02)]">
+                        <div class="w-8 h-8 rounded-xl bg-stoneWarm text-ink flex items-center justify-center text-xs font-mono font-semibold mb-4">02</div>
+                        <h3 class="text-sm sm:text-base font-semibold text-ink mb-2">Modular Mini-Game Architecture</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                           Architecting a clean, decoupled JavaScript and CSS structure (game.js, drill-game.js, water-game.js, solar-game.js) to seamlessly manage multiple interactive simulation panes without crashing or losing resource states.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-stone-100 shadow-[0_2px_16px_rgba(0,0,0,0.02)]">
+                        <div class="w-8 h-8 rounded-xl bg-stoneWarm text-ink flex items-center justify-center text-xs font-mono font-semibold mb-4">03</div>
+                        <h3 class="text-sm sm:text-base font-semibold text-ink mb-2">Zero-Dependency Browser Sim</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                            Ensuring students on low-bandwidth classroom laptops or tablets can launch <strong> Solaris </strong> instantly without gigabyte downloads, logins, or heavy GPU requirements.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. MEET OUR TEAM SECTION (READ-ONLY EDITORIAL CARDS) -->
+        <section id="about-team" class="py-10 sm:py-20 px-4 sm:px-8 max-w-6xl mx-auto">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12">
+                <div>
+                    <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-mutedInk block mb-2">The Crew Behind Solaris</span>
+                    <h2 class="editorial-heading text-3xl sm:text-5xl text-ink font-normal leading-tight">
+                        Meet Team Hyperion
+                    </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-mutedInk max-w-xs">
+                    Multidisciplinary student builders uniting NASA astrophysics data, narrative systems, and interactive web design.
+                </p>
+            </div>
+
+            <!-- Team Member Cards Grid (4 Read-Only Profile Cards) -->
+            <div id="team-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Populated via JavaScript as clean read-only cards -->
+            </div>
+        </section>
+
+        <!-- 5. HACKATHON 48-HOUR TIMELINE & OPEN DATA ATTRIBUTION -->
+        <section id="about-timeline" class="py-8 sm:py-16 px-4 sm:px-8 max-w-6xl mx-auto">
+            <div class="bg-stoneWarm rounded-[28px] sm:rounded-[32px] p-5 sm:p-12 border border-stone-200/70">
+                <div class="max-w-2xl mb-8 sm:mb-10">
+                    <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-mutedInk block mb-2">Team Hyperion Mission Log</span>
+                    <h2 class="editorial-heading text-2xl sm:text-4xl text-ink font-normal leading-tight text-balance">
+                        How Team Hyperion built Solaris in 48 hours
+                    </h2>
+                </div>
+
+                <!-- 4 Milestone Columns -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8 sm:mb-10">
+                    <div class="bg-white rounded-2xl p-5 border border-stone-200/60">
+                        <span class="text-[10px] font-mono font-semibold uppercase tracking-widest text-nasaBlue bg-blue-50 px-2.5 py-1 rounded-md">Hour 01 — 08</span>
+                        <h3 class="text-sm font-semibold text-ink mt-3 mb-1.5">Challenge & Data Curation</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                           Selected our NASA Space Apps challenge statement ("Build a Junior Astronaut Mission Trainer"), audited lunar South Pole datasets (Shackleton Crater conditions, regolith composition, and solar vectors), and sketched the educational UI layout..
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-stone-200/60">
+                        <span class="text-[10px] font-mono font-semibold uppercase tracking-widest text-ink bg-stoneWarm px-2.5 py-1 rounded-md">Hour 09 — 20</span>
+                        <h3 class="text-sm font-semibold text-ink mt-3 mb-1.5">Telemetry & Mini-Game Design</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                            Authored the core logic for our interactive educational subsystems—mapping cryo-stratigraphy drilling, thermodynamic water purification, and low-angle solar array alignment into kid-friendly browser puzzles.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-stone-200/60">
+                        <span class="text-[10px] font-mono font-semibold uppercase tracking-widest text-ink bg-stoneWarm px-2.5 py-1 rounded-md">Hour 21 — 36</span>
+                        <h3 class="text-sm font-semibold text-ink mt-3 mb-1.5">JavaScript & UI Integration</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                           Coded the HTML5/CSS3 Mission Control dashboard and integrated decoupled JavaScript game modules (drill-game.js, water-game.js, solar-game.js) with real-time resource and telemetry sync.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-5 border border-stone-200/60">
+                        <span class="text-[10px] font-mono font-semibold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">Hour 37 — 48</span>
+                        <h3 class="text-sm font-semibold text-ink mt-3 mb-1.5">Polish & Final Launch</h3>
+                        <p class="text-xs text-mutedInk leading-relaxed">
+                           Conducted cross-device browser testing, refined the glassmorphism UI styling, added success animations and audio cues, and finalized the Solaric demo for NASA Space Apps.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Open Source & NASA Attribution Bar -->
+                <div class="pt-6 border-t border-stone-200/80 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 text-xs text-mutedInk">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 shrink-0">
+                        <button type="button" onclick="switchPageView('home')" class="w-full sm:w-auto justify-center text-center px-4 py-2.5 rounded-full bg-white hover:bg-stoneCard text-ink font-medium border border-stone-200 transition cursor-pointer whitespace-nowrap">
+                            ← Back to Home
+                        </button>
+                        <a href="index.html" class="w-full sm:w-auto justify-center text-center px-4 py-2.5 rounded-full bg-ink hover:bg-stone-800 text-white font-medium transition cursor-pointer whitespace-nowrap inline-flex items-center gap-1">
+                            <span>Launch Solaris</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== 6. SPACIOUS EDITORIAL FOOTER SECTION ==================== -->
+    <footer class="relative mt-12 sm:mt-24 bg-[#F4F3EE] border-t border-stone-200/90 text-ink overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-20 sm:pb-16">
+            
+            <!-- 1. Pre-Footer Editorial CTA Banner -->
+            <div class="pb-10 sm:pb-14 border-b border-stone-300/70 flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8">
+                <div class="max-w-2xl">
+                    <span class="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-mutedInk bg-white/90 border border-stone-200/80 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full mb-3.5 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                        <span>SOLARIS MISSION CONTROL <span class="hidden sm:inline">• TEAM HYPERION</span></span>
+                    </span>
+                    <h2 class="editorial-heading text-3xl sm:text-4xl md:text-5xl text-ink leading-[1.1] font-normal text-balance">
+                        Ready to train your inner astronaut and survive the lunar South Pole?
+                    </h2>
+                    <p class="mt-3 text-xs sm:text-sm text-mutedInk max-w-xl leading-relaxed">
+                        Experience real NASA astronomy facts and interactive space survival with Solaris by Team Hyperion.
+                    </p>
+                </div>
+
+                <!-- Right Side Action Buttons (Full equal width on mobile, side-by-side on tablet/desktop) -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+                    <a 
+                        href="index.html" 
+                        class="w-full sm:w-auto justify-center text-center inline-flex items-center gap-2 bg-ink hover:bg-stone-800 text-white text-xs sm:text-sm font-medium px-6 py-3.5 rounded-full transition-all shadow-sm cursor-pointer whitespace-nowrap">
+                        <span>Launch Solaris Game</span>
+                        <span>→</span>
+                    </a>
+                    <button 
+                        type="button" 
+                        id="footer-switch-page-btn"
+                        onclick="toggleFooterPageView()" 
+                        class="w-full sm:w-auto justify-center text-center bg-white hover:bg-stoneCard text-ink border border-stone-300/90 text-xs sm:text-sm font-medium px-6 py-3.5 rounded-full transition-all cursor-pointer whitespace-nowrap">
+                        Meet Team Hyperion →
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Spacious 12-Column Editorial Footer Grid (2x2 link columns on mobile, 4 cols on desktop) -->
+            <div class="py-10 sm:py-14 border-b border-stone-300/70 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
+                
+                <!-- Left Brand Column (4 Cols on Desktop) -->
+                <div class="lg:col-span-4 flex flex-col justify-between pr-0 lg:pr-6">
+                    <div>
+                        <button type="button" onclick="switchPageView('home')" class="flex items-center gap-3 group text-left cursor-pointer focus:outline-none">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#07080E] p-1 flex items-center justify-center shadow-md ring-1 ring-stone-900/15 group-hover:scale-105 transition-transform shrink-0">
+                                <svg class="w-full h-full" viewBox="0 0 120 120" fill="none">
+                                    <circle cx="60" cy="60" r="46" stroke="url(#solarisOuterRing)" stroke-width="4.2"/>
+                                    <circle cx="60" cy="60" r="39" fill="url(#solarisCosmicBg)"/>
+                                    <path d="M60 21 A39 39 0 1 0 60 99 A31 36 0 1 1 60 21 Z" fill="url(#solarisSphere)" opacity="0.92"/>
+                                    <g opacity="0.96">
+                                        <path d="M63 97 V87 C63 83.5 65.5 81 69 81 H79 V97 H63 Z" fill="url(#solarisDome)"/>
+                                        <path d="M66.5 97 V89.5 A2.8 2.8 0 0 1 72.1 89.5 V97 H66.5 Z" fill="#131129"/>
+                                        <path d="M67 80 A7.5 7.5 0 0 1 82 80 Z" fill="url(#solarisDome)"/>
+                                        <rect x="78.5" y="69" width="6.5" height="27" rx="1" fill="url(#solarisDome)"/>
+                                    </g>
+                                    <path d="M52 58 L95 19 L101 25 L62 66 Z" fill="url(#solarisSwoosh)" opacity="0.55"/>
+                                    <polygon points="60,24 63.8,55.2 92,60 63.8,64.8 60,95 56.2,64.8 28,60 56.2,55.2" fill="#FDE047"/>
+                                    <circle cx="60" cy="60" r="6" fill="#FFFFFF"/>
+                                    <path d="M24 72 C10 88, 16 96, 38 89 C60 82, 82 62, 98 34" stroke="url(#solarisSwoosh)" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+                                    <polygon points="103,11 105.5,18.5 113.5,17.5 107.5,23 110,30.5 103,26.5 96,30.5 98.5,23 92.5,17.5 100.5,18.5" fill="#FDE047"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="editorial-heading text-2xl sm:text-3xl text-ink leading-none block">Solaris</span>
+                                <span class="text-[10px] uppercase tracking-[0.16em] text-mutedInk font-semibold mt-1 block">
+                                    by Team Hyperion
+                                </span>
+                            </div>
+                        </button>
+
+                        <p class="mt-4 text-xs sm:text-[13px] text-mutedInk leading-relaxed max-w-sm">
+                            Bridging raw NASA satellite ephemerides, solar weather streams, and Newtonian orbital mechanics into an open, browser-native cosmos.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right 4 Link Columns (Clean 2x2 grid on mobile phones, 4 columns on tablet/desktop) -->
+                <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8">
+                    <!-- Column 1: Navigation -->
+                    <div>
+                        <h3 class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-ink mb-3.5 sm:mb-4">Navigation</h3>
+                        <ul class="space-y-2.5 text-xs sm:text-[13px] text-mutedInk">
+                            <li>
+                                <button type="button" onclick="switchPageView('home')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Home
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="switchPageView('about')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    About Team Hyperion
+                                </button>
+                            </li>
+                            <li>
+                                <a href="index.html" class="hover:text-nasaBlue text-ink font-medium transition-colors cursor-pointer text-left inline-flex items-center gap-1">
+                                    <span>Play Solaris Game</span>
+                                    <span>↗</span>
+                                </a>
+                            </li>
+                            <li>
+                                <button type="button" onclick="navigateFromFooterToTab('astronomy')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Astronomy Facts
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="navigateFromFooterToTab('game')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Game Showcase
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 2: Space Stories -->
+                    <div>
+                        <h3 class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-ink mb-3.5 sm:mb-4">Space Stories</h3>
+                        <ul class="space-y-2.5 text-xs sm:text-[13px] text-mutedInk">
+                            <li>
+                                <button type="button" onclick="openStoryFromFooter('solar-storm')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Solar Storms & CMEs
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openStoryFromFooter('moon-artemis')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Lunar South Pole
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openStoryFromFooter('mars-jezero')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Mars Jezero Crater
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openStoryFromFooter('europa-ocean')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Europa's Ocean
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openStoryFromFooter('lagrange-points')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Lagrange Points
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openStoryFromFooter('planetary-defense')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Asteroid Deflection
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: NASA Open Data -->
+                    <div>
+                        <h3 class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-ink mb-3.5 sm:mb-4">NASA Open Data</h3>
+                        <ul class="space-y-2.5 text-xs sm:text-[13px] text-mutedInk">
+                            <li>
+                                <button type="button" onclick="openDatasetModal('JPL Horizons API', 'Provides solar system ephemerides, orbital state vectors, and high-precision planetary positions used to calibrate Solaris orbital mechanics.')" class="hover:text-ink transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-nasaBlue shrink-0"></span>
+                                    <span>JPL Horizons API</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openDatasetModal('NOAA SWPC DONKI', 'Space Weather Database Of Notifications, Knowledge, Information—powering real-time Coronal Mass Ejection (CME) and solar flare alerts in Solaris.')" class="hover:text-ink transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                                    <span>NOAA SWPC DONKI</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openDatasetModal('JWST Archive (MAST)', 'James Webb Space Telescope NIRSpec and NIRCam transmission spectra used in Solaris exoplanet atmospheric discovery cards.')" class="hover:text-ink transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                                    <span>JWST Archive</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openDatasetModal('NASA Eyes & SDO', 'Solar Dynamics Observatory extreme-ultraviolet imagery and 3D visualization references for solar corona and heliospheric missions.')" class="hover:text-ink transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
+                                    <span>NASA Eyes / SDO</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="openDatasetModal('DART Telemetry Archive', 'Double Asteroid Redirection Test impactor vectors and Dimorphos orbital period shift measurements used for planetary defense missions.')" class="hover:text-ink transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+                                    <span>DART Telemetry</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 4: Team Hyperion -->
+                    <div>
+                        <h3 class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-ink mb-3.5 sm:mb-4">Team Hyperion</h3>
+                        <ul class="space-y-2.5 text-xs sm:text-[13px] text-mutedInk">
+                            <li>
+                                <button type="button" onclick="navigateToSection('about', 'about-mission')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Our Mission
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="navigateToSection('about', 'about-challenge')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Challenge Track
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="navigateToSection('about', 'about-team')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    Team Roster
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="navigateToSection('about', 'about-timeline')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    48-Hour Timeline
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" onclick="navigateToSection('home', 'faq')" class="hover:text-ink transition-colors cursor-pointer text-left">
+                                    FAQ Accordion
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 3. Aligned Bottom Sub-Footer Bar -->
+            <div class="pt-7 sm:pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-mutedInk">
+                <p class="text-center md:text-left leading-relaxed">
+                    © 2026 <strong class="text-ink font-medium">Solaris</strong> by <strong class="text-ink font-medium">Team Hyperion</strong> • Built for the NASA International Space Apps Challenge.
+                </p>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
+                    <span class="text-[11px] text-mutedInk hidden sm:inline">
+                        Open Science • Turn-based Simulation • STEM Education 
+                    </span>
+                    <button 
+                        type="button" 
+                        onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" 
+                        class="inline-flex items-center gap-1.5 bg-white hover:bg-stoneCard text-ink font-medium px-4 py-2 rounded-full border border-stone-200/90 transition shadow-2xs cursor-pointer whitespace-nowrap">
+                        <span>Back to Top</span>
+                        <span>↑</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Subtle decorative confetti dots along bottom edge matching reference UI -->
+        <div class="absolute bottom-2 left-10 w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+        <div class="absolute bottom-3 left-1/4 w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+        <div class="absolute bottom-2 left-1/2 w-1.5 h-1.5 rounded-full bg-nasaBlue"></div>
+        <div class="absolute bottom-3 right-1/4 w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+        <div class="absolute bottom-2 right-12 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
+    </footer>
+
+    <!-- ==================== INTERACTIVE PLAYABLE MINI-GAME MODAL ==================== -->
+    <div id="game-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 backdrop-blur-sm p-3 sm:p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-stone-200 animate-[fadeInSlide_0.25s_ease-out]">
+            <!-- Modal Top Header -->
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-stoneWarm border-b border-stone-200 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                    <div class="min-w-0">
+                        <h3 class="editorial-heading text-lg sm:text-xl text-ink leading-none truncate">Solaris Orbital Simulator</h3>
+                        <p class="text-[10px] sm:text-[11px] text-mutedInk mt-0.5 truncate">Tap or click ahead of your probe to fire thrusters & sync beacons</p>
+                    </div>
+                </div>
+                <button onclick="closeGameModal()" class="w-8 h-8 rounded-full bg-white hover:bg-stone-200 text-ink flex items-center justify-center text-sm transition cursor-pointer shrink-0" aria-label="Close Simulator">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Interactive Canvas Area (Taller 4:3 aspect ratio on mobile phones for easier touch navigation) -->
+            <div class="relative bg-[#0B0E14] w-full aspect-[4/3] sm:aspect-[16/10] select-none touch-none">
+                <canvas id="orbital-canvas" class="w-full h-full block cursor-crosshair touch-none"></canvas>
+                
+                <!-- HUD Overlay -->
+                <div class="absolute top-2.5 sm:top-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between pointer-events-none text-[10px] sm:text-xs font-mono">
+                    <div class="bg-black/55 backdrop-blur-md text-white px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10">
+                        BEACONS: <span id="game-score" class="text-sky-400 font-semibold">0</span> / 5
+                    </div>
+                    <div class="bg-black/55 backdrop-blur-md text-stone-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10">
+                        FUEL: <span id="game-fuel" class="text-emerald-400 font-semibold">100%</span>
+                    </div>
+                </div>
+
+                <!-- Status Banner inside canvas -->
+                <div id="game-banner" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4 sm:p-6">
+                    <span id="game-banner-tag" class="text-[10px] uppercase tracking-widest text-sky-400 mb-1">Telemetry Complete</span>
+                    <h4 id="game-banner-title" class="editorial-heading text-2xl sm:text-3xl text-white mb-2">Orbit Stabilized!</h4>
+                    <p id="game-banner-desc" class="text-xs text-stone-300 max-w-sm mb-4 sm:mb-5">You successfully navigated the gravity well and synced all 5 NASA deep-space relays.</p>
+                    <button onclick="resetOrbitalGame()" class="bg-white text-ink hover:bg-stone-200 text-xs font-medium px-5 py-2.5 rounded-full transition cursor-pointer">
+                        Launch New Orbit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Controls Footer -->
+            <div class="px-4 sm:px-6 py-3 sm:py-3.5 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs">
+                <span class="text-mutedInk text-[11px] sm:text-xs">Tip: Tap ahead of your probe to adjust orbital velocity around the star.</span>
+                <div class="flex items-center justify-end gap-2 shrink-0">
+                    <button onclick="resetOrbitalGame()" class="px-3.5 py-1.5 rounded-full bg-stoneWarm hover:bg-stoneCard text-ink font-medium transition cursor-pointer whitespace-nowrap">
+                        Reset Probe
+                    </button>
+                    <button onclick="closeGameModal()" class="px-4 py-1.5 rounded-full bg-ink text-white hover:bg-stone-800 font-medium transition cursor-pointer whitespace-nowrap">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MISSION / STORY INFO MODAL ==================== -->
+    <div id="info-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-stone-200">
+            <div class="flex items-center justify-between mb-4">
+                <span id="info-modal-tag" class="text-[10px] uppercase tracking-widest text-mutedInk bg-stoneWarm px-2.5 py-1 rounded-full">Team Hyperion • NASA Space Apps</span>
+                <button onclick="closeInfoModal()" class="w-7 h-7 rounded-full bg-stoneWarm hover:bg-stoneCard text-ink flex items-center justify-center text-xs cursor-pointer">✕</button>
+            </div>
+            <h3 id="info-modal-title" class="editorial-heading text-2xl sm:text-3xl text-ink mb-3">Our Mission</h3>
+            <p id="info-modal-body" class="text-xs sm:text-sm text-mutedInk leading-relaxed mb-6">
+                Solaris transforms open NASA astrophysics archives into an approachable, high-craft interactive experience. Built by Team Hyperion for the NASA Space Apps Challenge.
+            </p>
+            <button onclick="closeInfoModal()" class="w-full bg-ink text-white text-xs font-medium py-2.5 rounded-full hover:bg-stone-800 transition cursor-pointer">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        const videoGalleryTrack = document.getElementById('videoGalleryTrack');
+        const videoGallerySlides = Array.from(videoGalleryTrack.querySelectorAll('.video-gallery-slide'));
+        const videoGalleryPrev = document.getElementById('videoGalleryPrev');
+        const videoGalleryNext = document.getElementById('videoGalleryNext');
+        const videoGalleryStatus = document.getElementById('videoGalleryStatus');
+        const videoGalleryDots = Array.from(document.querySelectorAll('.video-gallery-dot'));
+        let activeVideoGalleryIndex = 0;
+
+        function updateVideoGallery() {
+            const nextIndex = Math.max(
+                0,
+                Math.min(videoGallerySlides.length - 1, Math.round(videoGalleryTrack.scrollLeft / videoGalleryTrack.clientWidth))
+            );
+            if (nextIndex === activeVideoGalleryIndex) return;
+
+            activeVideoGalleryIndex = nextIndex;
+            videoGallerySlides.forEach((slide, index) => {
+                const video = slide.querySelector('video');
+                if (index === activeVideoGalleryIndex) {
+                    video.play().catch(error => {
+                        if (!['NotAllowedError', 'NotSupportedError', 'AbortError'].includes(error.name)) {
+                            console.error('Unable to play the selected gallery video.', error);
+                        }
+                    });
+                } else {
+                    video.pause();
+                }
+            });
+            videoGalleryPrev.disabled = activeVideoGalleryIndex === 0;
+            videoGalleryNext.disabled = activeVideoGalleryIndex === videoGallerySlides.length - 1;
+            videoGalleryStatus.textContent = `${activeVideoGalleryIndex + 1} / ${videoGallerySlides.length}`;
+            videoGalleryDots.forEach((dot, index) => {
+                dot.setAttribute('aria-current', String(index === activeVideoGalleryIndex));
+            });
+        }
+
+        function showVideoGallerySlide(index) {
+            const targetIndex = Math.max(0, Math.min(videoGallerySlides.length - 1, index));
+            videoGalleryTrack.scrollTo({
+                left: targetIndex * videoGalleryTrack.clientWidth,
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+            });
+            if (targetIndex === activeVideoGalleryIndex) updateVideoGallery();
+        }
+
+        videoGalleryTrack.addEventListener('scroll', updateVideoGallery, { passive: true });
+        videoGalleryPrev.addEventListener('click', () => showVideoGallerySlide(activeVideoGalleryIndex - 1));
+        videoGalleryNext.addEventListener('click', () => showVideoGallerySlide(activeVideoGalleryIndex + 1));
+        videoGalleryDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => showVideoGallerySlide(index));
+        });
+
+        document.querySelectorAll('.landing-gallery-video').forEach(video => {
+            video.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    video.requestFullscreen().catch(error => {
+                        console.error(`Unable to display ${video.getAttribute('aria-label')} fullscreen.`, error);
+                    });
+                }
+            });
+        });
+
+        // 1. Hero Card Interactive "Cosmic Fact of the Moment" Switcher
+        const heroCosmicFacts = [
+            {
+                title: "100,000-Year-Old Sunlight",
+                detail: "A photon takes ~100,000 years to bounce through the Sun's dense radiative zone to its surface, then just 8 minutes 20 seconds to cross 150 million km to Earth."
+            },
+            {
+                title: "Eternal Lunar Footprints",
+                detail: "Because the Moon has no atmosphere, wind, or liquid water, the Apollo astronauts' bootprints in the lunar regolith will remain preserved for tens of millions of years."
+            },
+            {
+                title: "Martian Blue Sunsets",
+                detail: "While daytime skies on Mars look butterscotch-red, fine iron-oxide dust particles scatter blue wavelengths forward around the Sun—making Martian sunsets glow cool blue."
+            }
+        ];
+
+        let currentHeroFactIndex = 0;
+
+        function selectCosmicFact(index) {
+            currentHeroFactIndex = index;
+            const readout = document.getElementById('astro-card-readout');
+            if (readout) {
+                readout.innerHTML = `<span class="font-semibold text-ink">Did you know?</span> ${heroCosmicFacts[index].detail}`;
+            }
+            [0, 1, 2].forEach(i => {
+                const row = document.getElementById(`hero-fact-row-${i}`);
+                if (!row) return;
+                if (i === index) {
+                    row.className = "p-2.5 rounded-xl bg-stoneWarm/90 ring-1 ring-ink/10 hover:bg-stoneWarm transition-all cursor-pointer flex items-center justify-between gap-2";
+                } else {
+                    row.className = "p-2.5 rounded-xl bg-white hover:bg-stoneWarm/70 border border-stone-100 transition-all cursor-pointer flex items-center justify-between gap-2";
+                }
+            });
+        }
+
+        function nextCosmicFact() {
+            const nextIdx = (currentHeroFactIndex + 1) % heroCosmicFacts.length;
+            selectCosmicFact(nextIdx);
+        }
+
+        // Interactive Light-Travel Time Pill Calculator inside Astronomy Showcase Card 1
+        function setLightTravelTarget(btnEl, targetName, travelTime, distanceText, factNote) {
+            const container = btnEl.closest('.light-calc-card');
+            if (!container) return;
+            container.querySelectorAll('.light-pill-btn').forEach(b => {
+                b.className = "light-pill-btn px-3 py-1 rounded-full text-[11px] font-medium text-mutedInk hover:text-ink bg-stoneWarm transition cursor-pointer";
+            });
+            btnEl.className = "light-pill-btn px-3 py-1 rounded-full text-[11px] font-medium bg-ink text-white transition cursor-pointer";
+            const timeEl = container.querySelector('.light-time-val');
+            const distEl = container.querySelector('.light-dist-val');
+            const noteEl = container.querySelector('.light-note-val');
+            if (timeEl) timeEl.textContent = travelTime;
+            if (distEl) distEl.textContent = distanceText;
+            if (noteEl) noteEl.textContent = factNote;
+        }
+
+        // 2. Showcase Section Data ('Astronomy' Educational Facts vs 'Game' Showcase & Link to index.html)
+        const showcaseData = {
+            astronomy: [
+                {
+                    title: "Sunlight is ancient before it even leaves the Sun",
+                    description: "Photons born via nuclear fusion in the Sun's core collide endlessly with densely packed protons, taking roughly 100,000 years to reach the surface—before sprinting across empty space to Earth in just 8 minutes and 20 seconds.",
+                    mockup: `
+                        <div class="light-calc-card bg-white rounded-2xl p-5 sm:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+                            <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-mutedInk mb-4">
+                                <span class="font-semibold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">Did You Know? • Speed of Light (299,792 km/s)</span>
+                                <div class="inline-flex items-center gap-1 bg-stoneWarm p-1 rounded-full">
+                                    <button type="button" onclick="setLightTravelTarget(this, 'Moon', '1.3 Seconds', '384,400 km (Reflected)', 'Light reflected off the Moon reaches your eyes in just over a second.')" class="light-pill-btn px-3 py-1 rounded-full text-[11px] font-medium text-mutedInk hover:text-ink bg-stoneWarm transition cursor-pointer">Moon: 1.3s</button>
+                                    <button type="button" onclick="setLightTravelTarget(this, 'Earth', '8 Min 20 Sec', '149.6 Million km (1 AU)', 'After 100,000 years inside the Sun’s radiative zone, sunlight reaches Earth in 500 seconds.')" class="light-pill-btn px-3 py-1 rounded-full text-[11px] font-medium bg-ink text-white transition cursor-pointer">Earth: 8m 20s</button>
+                                    <button type="button" onclick="setLightTravelTarget(this, 'Mars', '~12.5 Minutes', '225 Million km Avg', 'Because radio waves travel at light speed, Mars rovers operate with a 12-to-22 minute communication delay.')" class="light-pill-btn px-3 py-1 rounded-full text-[11px] font-medium text-mutedInk hover:text-ink bg-stoneWarm transition cursor-pointer">Mars: ~12.5m</button>
+                                    <button type="button" onclick="setLightTravelTarget(this, 'Jupiter', '~43 Minutes', '778 Million km (5.2 AU)', 'Sunlight arriving at Jupiter’s icy moon Europa left the Sun nearly three-quarters of an hour ago.')" class="light-pill-btn px-3 py-1 rounded-full text-[11px] font-medium text-mutedInk hover:text-ink bg-stoneWarm transition cursor-pointer">Jupiter: ~43m</button>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-stoneWarm/60 border border-stone-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-[11px] text-mutedInk uppercase tracking-wider">Photon Travel Time in Space</p>
+                                    <p class="light-time-val editorial-heading text-3xl sm:text-4xl text-ink mt-0.5">8 Min 20 Sec</p>
+                                    <p class="light-note-val text-xs text-mutedInk mt-1">After 100,000 years inside the Sun’s radiative zone, sunlight reaches Earth in 500 seconds.</p>
+                                </div>
+                                <div class="sm:text-right shrink-0 bg-white px-3.5 py-2.5 rounded-xl border border-stone-200/70">
+                                    <p class="text-[10px] text-mutedInk uppercase">Distance Covered</p>
+                                    <p class="light-dist-val text-xs font-mono font-semibold text-ink mt-0.5">149.6 Million km (1 AU)</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    title: "Extreme worlds: Blue Martian sunsets & silent lunar footprints",
+                    description: "Without wind, rain, or volcanic activity, footprints left by Apollo astronauts on the Moon erode only via microscopic meteorite impacts over millions of years—while on Mars, fine iron-oxide dust scatters blue light forward, creating eerie blue twilights.",
+                    mockup: `
+                        <div class="bg-white rounded-2xl p-5 sm:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <div class="p-4 rounded-2xl bg-stoneWarm/70 border border-stone-200/60">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-semibold text-ink">🌕 The Moon's Time Capsule</span>
+                                        <span class="text-[10px] font-mono bg-white px-2 py-0.5 rounded-full text-ink border border-stone-200">0 Atm</span>
+                                    </div>
+                                    <p class="text-xs text-mutedInk leading-relaxed">
+                                        With no atmosphere to carry sound or wind, the Moon is completely silent and preserves surface tracks for <strong class="text-ink">10 to 100 million years</strong>.
+                                    </p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-100">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-semibold text-ink">🪐 Mars's Inverted Skies</span>
+                                        <span class="text-[10px] font-mono bg-white px-2 py-0.5 rounded-full text-nasaBlue border border-blue-200">Mie Scatter</span>
+                                    </div>
+                                    <p class="text-xs text-mutedInk leading-relaxed">
+                                        Earth has blue midday skies and red sunsets; Mars flips this completely with <strong class="text-ink">rust-red daytime skies and glowing blue sunsets</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    title: "Invisible shields: How Earth's magnetosphere deflects solar storms",
+                    description: "During intense solar storms, the Sun hurls billion-ton Coronal Mass Ejections (CMEs) across space at up to 3,000 km/s. Earth's liquid iron outer core generates a magnetic cocoon that deflects this radiation and channels particles into polar auroras.",
+                    mockup: `
+                        <div class="bg-white rounded-2xl p-5 sm:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-medium text-ink">Planetary Magnetic Shielding Comparison</span>
+                                <span class="text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-medium">Aurora Generator</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2.5 text-center">
+                                <div class="p-3 rounded-xl bg-stoneWarm">
+                                    <p class="text-[10px] text-mutedInk">CME Peak Speed</p>
+                                    <p class="text-xs sm:text-sm font-semibold text-ink mt-0.5">3,000 km/s</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-stoneWarm">
+                                    <p class="text-[10px] text-mutedInk">Sun-to-Earth Fastest</p>
+                                    <p class="text-xs sm:text-sm font-semibold text-ink mt-0.5">~15–18 Hours</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-stoneWarm">
+                                    <p class="text-[10px] text-mutedInk">Aurora Altitude</p>
+                                    <p class="text-xs sm:text-sm font-semibold text-ink mt-0.5">80 – 600 km</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            ],
+            game: [
+                {
+                    title: "Watch the Solaris game intro",
+                    description: "Click the video to open the game menu and start your mission.",
+                    mockup: `
+                        <div class="bg-white rounded-2xl p-3 sm:p-5 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                <span class="text-xs font-medium text-ink">Solar Alart</span>
+                                <a href="index.html" target="_top" class="text-[11px] font-medium text-nasaBlue hover:underline whitespace-nowrap">Open full screen ↗</a>
+                            </div>
+                            <a href="index.html" target="_top" aria-label="Open the Solaris game" class="block w-full aspect-video min-h-[260px] overflow-hidden rounded-xl border border-stone-200 bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nasaBlue">
+                                <video src="assets/video/welcome-background.mp4" autoplay muted loop playsinline aria-hidden="true" class="block w-full h-full object-cover"></video>
+                            </a>
+                        </div>
+                    `
+                },
+                
+                {
+                    title: "Launch directly in your browser — Zero installs required",
+                    description: "Solaris is built as a fast, standalone HTML5 experience. Click below to jump straight into the cockpit on desktop, tablet, or mobile with zero downloads or sign-ups.",
+                    mockup: `
+                        <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-stone-100 flex flex-col items-center justify-center text-center min-h-[160px]">
+                            <span class="text-[11px] font-mono uppercase tracking-widest text-mutedInk mb-2">Standalone Game Build • </span>
+                            <h4 class="editorial-heading text-2xl sm:text-3xl text-ink mb-4">Enter the Solaris Cockpit</h4>
+                            <a href="index.html" class="inline-flex items-center gap-2 bg-nasaBlue hover:bg-blue-700 text-white text-xs sm:text-sm font-medium px-7 py-3 rounded-full shadow-sm transition cursor-pointer">
+                                <span>Launch Solaris Game </span>
+                                <span>→</span>
+                            </a>
+                            <span class="text-[10px] font-mono text-mutedInk mt-3">Direct HTML5 Link • Instant Browser Play</span>
+                        </div>
+                    `
+                }
+            ]
+        };
+
+        let currentTab = 'astronomy';
+
+        function setShowcaseTab(tab) {
+            currentTab = tab;
+            const astroBtn = document.getElementById('tab-btn-astronomy');
+            const gameBtn = document.getElementById('tab-btn-game');
+            const container = document.getElementById('showcase-content');
+
+            if (tab === 'astronomy') {
+                astroBtn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all bg-white text-ink shadow-sm cursor-pointer";
+                astroBtn.setAttribute('aria-selected', 'true');
+                gameBtn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all text-mutedInk hover:text-ink cursor-pointer";
+                gameBtn.setAttribute('aria-selected', 'false');
+            } else {
+                gameBtn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all bg-white text-ink shadow-sm cursor-pointer";
+                gameBtn.setAttribute('aria-selected', 'true');
+                astroBtn.className = "px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all text-mutedInk hover:text-ink cursor-pointer";
+                astroBtn.setAttribute('aria-selected', 'false');
+            }
+
+            // Render 3 vertical blocks matching the reference layout
+            const items = showcaseData[tab];
+            container.innerHTML = items.map(item => `
+                <div class="tab-fade-enter">
+                    ${item.mockup}
+                    <div class="mt-5 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-6 items-start px-1">
+                        <h3 class="sm:col-span-5 text-sm sm:text-base font-semibold text-ink tracking-tight leading-snug">
+                            ${item.title}
+                        </h3>
+                        <p class="sm:col-span-7 text-xs sm:text-[13px] text-mutedInk leading-relaxed">
+                            ${item.description}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTabAndScroll(tab) {
+            setShowcaseTab(tab);
+            document.getElementById('showcase').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize default tab on load
+        setShowcaseTab('astronomy');
+
+        // 3. 6 Expandable Space Science Story Blocks (Solar Storm, Moon, Mars, Europa, Lagrange Points, Asteroids)
+        const spaceArticles = [
+            {
+                id: 'solar-storm',
+                category: 'Space Weather',
+                readTime: '3 min read',
+                title: 'Solar Storms & Coronal Mass Ejections',
+                summary: 'How violent magnetic eruptions on the Sun hurl billion-ton plasma clouds across the solar system—and how spacecraft shield against them.',
+                telemetry: 'NASA SDO & Parker Solar Probe • Speed: up to 3,000 km/s',
+                gameLink: 'In Solaris: Solar flare alerts force you to angle your probe’s radiation shield and time orbital burns between geomagnetic surges.',
+                paragraphs: [
+                    'Beneath the Sun’s visible photosphere, tangled magnetic field lines constantly twist and snap. When magnetic reconnection occurs, it unleashes intense bursts of X-rays called solar flares, often accompanied by Coronal Mass Ejections (CMEs)—massive bubbles of magnetized plasma blasted into interplanetary space.',
+                    'When a CME collides with Earth’s magnetosphere, it compresses our magnetic shield and funnels charged particles toward the poles, igniting vivid auroras while simultaneously inducing currents that can disrupt satellites, GPS navigation, and high-voltage power grids.',
+                    'Using live extreme-ultraviolet imagery from NASA’s Solar Dynamics Observatory (SDO) and in-situ measurements from the Parker Solar Probe, scientists track CME trajectories hours before arrival.'
+                ],
+                svg: `
+                    <svg class="w-full h-28" viewBox="0 0 280 110" fill="none">
+                        <circle cx="48" cy="55" r="34" fill="#F59E0B" fill-opacity="0.22"/>
+                        <circle cx="48" cy="55" r="22" fill="#F59E0B"/>
+                        <path d="M72 38 C115 20, 150 42, 185 32" stroke="#FBBF24" stroke-width="2" stroke-dasharray="4 3"/>
+                        <path d="M74 55 C125 55, 165 62, 225 55" stroke="#F97316" stroke-width="2.2"/>
+                        <path d="M72 72 C115 90, 150 68, 185 78" stroke="#FBBF24" stroke-width="2" stroke-dasharray="4 3"/>
+                        <path d="M228 33 A24 24 0 0 0 228 77" stroke="#38BDF8" stroke-width="2"/>
+                        <circle cx="236" cy="55" r="7" fill="#3B82F6"/>
+                    </svg>
+                `
+            },
+            {
+                id: 'moon-artemis',
+                category: 'Lunar Exploration',
+                readTime: '4 min read',
+                title: 'The Moon’s South Pole & Artemis II',
+                summary: 'Why permanently shadowed craters near Shackleton Crater hold ancient water ice vital for sustained human presence on the Moon.',
+                telemetry: 'NASA LRO & Artemis Program • Crater Temp: -233°C (40 K)',
+                gameLink: 'In Solaris: Navigate low-lunar frozen orbits and deploy surface relay beacons inside shadowed polar basins.',
+                paragraphs: [
+                    'Unlike Earth’s 23.5-degree axial tilt, the Moon tilts at just 1.5 degrees. Because of this near-vertical orientation, sunlight skims horizontally across the lunar poles—leaving deep crater floors in permanent darkness for billions of years.',
+                    'Data from NASA’s Lunar Reconnaissance Orbiter (LRO) and the LCROSS impactor confirmed that these Permanently Shadowed Regions (PSRs) act as cryogenic cold traps harboring millions of tons of water ice mixed into the regolith.',
+                    'As Artemis missions prepare to return astronauts to the lunar vicinity, harvesting polar ice could provide breathable oxygen, drinking water, and liquid hydrogen rocket propellant for future deep-space voyages.'
+                ],
+                svg: `
+                    <svg class="w-full h-28" viewBox="0 0 280 110" fill="none">
+                        <circle cx="140" cy="55" r="34" fill="#E7E5E4" stroke="#A8A29E" stroke-width="1.5"/>
+                        <circle cx="128" cy="46" r="7" fill="#D6D3D1"/>
+                        <circle cx="152" cy="60" r="9" fill="#D6D3D1"/>
+                        <path d="M126 84 A34 34 0 0 0 154 84 Z" fill="#1E293B"/>
+                        <ellipse cx="140" cy="55" rx="76" ry="22" transform="rotate(-14 140 55)" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <circle cx="212" cy="43" r="3.5" fill="#2563EB"/>
+                    </svg>
+                `
+            },
+            {
+                id: 'mars-jezero',
+                category: 'Red Planet',
+                readTime: '4 min read',
+                title: 'Mars: Jezero Crater & Ancient Deltas',
+                summary: 'Inside Perseverance’s search for biosignatures across a 3.7-billion-year-old river delta that once emptied into a Martian lake.',
+                telemetry: 'Mars 2020 Perseverance • Elevation: -2,570 m',
+                gameLink: 'In Solaris: Execute aerobraking entries through thin Martian CO₂ atmosphere without overheating your heat shield.',
+                paragraphs: [
+                    'Billions of years ago, when Mars possessed a thicker atmosphere and warmer climate, liquid water carved deep valley networks across its surface. In Jezero Crater, an ancient river breached the western rim, fanning out into a sediment-rich delta.',
+                    'On Earth, river deltas rapidly bury organic molecules and microbial mats in fine-grained mudstones, preserving them across geological epochs. NASA’s Perseverance rover is coring these exact sedimentary layers to cache samples for future return to Earth.',
+                    'Alongside Perseverance, orbital spectrometers aboard the Mars Reconnaissance Orbiter continue mapping hydrated clays and carbonates across the crater floor.'
+                ],
+                svg: `
+                    <svg class="w-full h-28" viewBox="0 0 280 110" fill="none">
+                        <circle cx="140" cy="55" r="34" fill="#EA580C" fill-opacity="0.85"/>
+                        <path d="M114 48 Q140 38 166 50" stroke="#FED7AA" stroke-width="1.5" fill="none"/>
+                        <path d="M118 65 Q142 74 164 62" stroke="#9A3412" stroke-width="2" fill="none"/>
+                        <circle cx="155" cy="44" r="4" fill="#FFFFFF" stroke="#9A3412" stroke-width="1.5"/>
+                        <path d="M45 85 Q105 22 155 44" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4 3"/>
+                    </svg>
+                `
+            },
+            {
+                id: 'europa-ocean',
+                category: 'Outer Solar System',
+                readTime: '3 min read',
+                title: 'Europa’s Hidden Subsurface Ocean',
+                summary: 'Beneath a fractured shell of water ice lies a global saltwater ocean containing more than twice the volume of all Earth’s oceans.',
+                telemetry: 'NASA Europa Clipper • Ice Shell: ~15–25 km thick',
+                gameLink: 'In Solaris: Perform multi-flyby gravity assists around Jupiter’s Galilean moons while avoiding intense radiation belts.',
+                paragraphs: [
+                    'Jupiter’s fourth-largest moon, Europa, is locked in an orbital resonance with neighboring Io and Ganymede. This gravitational tug-of-war flexes Europa’s interior, generating tidal heating that keeps water liquid beneath its icy crust.',
+                    'Hubble Space Telescope observations and magnetometer readings from the Galileo spacecraft revealed plumes of water vapor erupting through surface fractures, offering a tantalizing way to sample ocean chemistry without drilling through miles of ice.',
+                    'NASA’s Europa Clipper mission conducts dozens of close flybys to map ice thickness, surface composition, and potential habitable zones.'
+                ],
+                svg: `
+                    <svg class="w-full h-28" viewBox="0 0 280 110" fill="none">
+                        <circle cx="140" cy="55" r="32" fill="#BAE6FD" stroke="#0284C7" stroke-width="1.5"/>
+                        <path d="M114 45 L145 55 L166 42" stroke="#B45309" stroke-width="1.3"/>
+                        <path d="M118 66 L142 56 L163 68" stroke="#B45309" stroke-width="1.3"/>
+                        <path d="M140 23 Q135 10 128 8 M140 23 Q145 10 152 8" stroke="#38BDF8" stroke-width="1.5"/>
+                    </svg>
+                `
+            },
+            {
+                id: 'lagrange-points',
+                category: 'Orbital Mechanics',
+                readTime: '3 min read',
+                title: 'Lagrange Points & Deep Space Telescopes',
+                summary: 'How gravitational equilibrium zones 1.5 million kilometers from Earth keep the James Webb Space Telescope thermally stable.',
+                telemetry: 'Sun-Earth L2 Halo Orbit • Distance: 1.5M km',
+                gameLink: 'In Solaris: Park your observatory probe inside an L2 halo orbit using minimal station-keeping thruster fuel.',
+                paragraphs: [
+                    'In any two-body gravitational system—such as the Sun and Earth—there exist five special locations called Lagrange Points where gravitational forces and orbital centrifugal force balance out.',
+                    'The second Lagrange Point (L2) lies 1.5 million kilometers directly behind Earth as viewed from the Sun. Here, a spacecraft orbits the Sun in lockstep with Earth, allowing a single sunshield to block heat and light from the Sun, Earth, and Moon simultaneously.',
+                    'This ultra-cold environment enables the James Webb Space Telescope to detect faint infrared light from the earliest galaxies formed after the Big Bang.'
+                ],
+                svg: `
+                    <svg class="w-full h-28" viewBox="0 0 280 110" fill="none">
+                        <circle cx="52" cy="55" r="16" fill="#FBBF24"/>
+                        <circle cx="155" cy="55" r="8" fill="#2563EB"/>
+                        <line x1="68" y1="55" x2="225" y2="55" stroke="#A8A29E" stroke-dasharray="3 3"/>
+                        <ellipse cx="215" cy="55" rx="10" ry="22" stroke="#141413" stroke-width="1.4"/>
+                        <circle cx="215" cy="33" r="3.5" fill="#141413"/>
+                    </svg>
+                `
+            },
+            {
+                id: 'planetary-defense',
+                category: 'Planetary Defense',
+                readTime: '4 min read',
+                title: 'Asteroid Deflection & Kinetic Impactors',
+                summary: 'Lessons from NASA’s DART mission: proving humanity can alter the orbital period of a hazardous near-Earth asteroid.',
+                telemetry: 'NASA DART & Dimorphos • Period Shift: -33 minutes',
+                gameLink: 'In Solaris: Calculate intercept vectors and kinetic momentum transfer to nudge an incoming asteroid off a collision course.',
+                paragraphs: [
+                    'Near-Earth Objects (NEOs) are asteroids and comets whose orbits bring them within 45 million kilometers of Earth’s orbital path. NASA’s Center for Near-Earth Object Studies continuously tracks tens of thousands of these bodies.',
+                    'In September 2022, NASA’s Double Asteroid Redirection Test (DART) intentionally impacted the asteroid moonlet Dimorphos at 6.1 kilometers per second. The collision ejected over a thousand tons of rocky debris, acting like a natural rocket thruster.',
+                    'DART shortened Dimorphos’s orbit around its parent asteroid Didymos by 33 minutes—exceeding minimum mission benchmarks by more than 25 times.'
+                ],
+                svg: `
+                    <svg class="w-full h-28" viewBox="0 0 280 110" fill="none">
+                        <path d="M40 78 Q130 35 235 42" stroke="#A8A29E" stroke-width="1.4" stroke-dasharray="4 4"/>
+                        <path d="M155 50 Q200 62 235 76" stroke="#2563EB" stroke-width="1.8"/>
+                        <polygon points="150,42 164,46 161,58 147,56" fill="#57534E"/>
+                        <line x1="115" y1="24" x2="146" y2="45" stroke="#EF4444" stroke-width="2"/>
+                        <circle cx="148" cy="46" r="4" fill="#F97316"/>
+                    </svg>
+                `
+            }
+        ];
+
+        const expandedStories = new Set();
+
+        function renderStoriesGrid() {
+            const grid = document.getElementById('stories-grid');
+            grid.innerHTML = spaceArticles.map(article => {
+                const isExpanded = expandedStories.has(article.id);
+                return `
+                    <article id="story-card-${article.id}" class="editorial-card bg-stoneWarm rounded-3xl p-5 sm:p-6 border border-stone-200/70 flex flex-col justify-between transition-all duration-300 ${isExpanded ? 'ring-1 ring-ink/15 bg-white shadow-lg' : ''}">
+                        <div>
+                            <!-- Visual Diagram Header -->
+                            <div class="bg-white rounded-2xl border border-stone-100 p-3 mb-4 flex items-center justify-center overflow-hidden">
+                                ${article.svg}
+                            </div>
+
+                            <!-- Metadata Row -->
+                            <div class="flex items-center justify-between gap-2 mb-2.5">
+                                <span class="text-[10px] font-medium uppercase tracking-wider text-ink bg-white border border-stone-200/80 px-2.5 py-0.5 rounded-full">
+                                    ${article.category}
+                                </span>
+                                <span class="text-[11px] text-mutedInk">${article.readTime}</span>
+                            </div>
+
+                            <!-- Article Title -->
+                            <h3 class="editorial-heading text-2xl text-ink leading-snug mb-2">
+                                ${article.title}
+                            </h3>
+
+                            <!-- Concise Summary -->
+                            <p class="text-xs text-mutedInk leading-relaxed">
+                                ${article.summary}
+                            </p>
+
+                            <!-- Expandable Full Content -->
+                            ${isExpanded ? `
+                                <div class="mt-4 pt-4 border-t border-stone-200/80 space-y-3 tab-fade-enter">
+                                    <div class="px-3 py-2 rounded-xl bg-stoneWarm text-[11px] font-mono text-ink">
+                                        ${article.telemetry}
+                                    </div>
+                                    ${article.paragraphs.map(p => `
+                                        <p class="text-xs text-ink/90 leading-relaxed">${p}</p>
+                                    `).join('')}
+                                    <div class="p-3 rounded-xl bg-blue-50/70 border border-blue-100 text-[11px] text-ink leading-relaxed">
+                                        <span class="font-semibold text-nasaBlue">Solaris Game Connection:</span> ${article.gameLink.replace('In Solaris: ', '')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Expand / Collapse Trigger Button -->
+                        <div class="mt-5 pt-3 border-t border-stone-200/60 flex items-center justify-between">
+                            <button 
+                                onclick="toggleStoryExpand('${article.id}')" 
+                                aria-expanded="${isExpanded}"
+                                class="inline-flex items-center gap-1.5 text-xs font-medium text-ink hover:text-nasaBlue transition-colors cursor-pointer py-1">
+                                <span>${isExpanded ? 'Show less' : 'Read more'}</span>
+                                <span class="w-5 h-5 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs leading-none">
+                                    ${isExpanded ? '−' : '+'}
+                                </span>
+                            </button>
+
+                            ${isExpanded ? `
+                                <a href="index.html" class="text-[11px] font-medium text-nasaBlue hover:underline cursor-pointer">
+                                    Play in Solaris →
+                                </a>
+                            ` : ''}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function toggleStoryExpand(id) {
+            if (expandedStories.has(id)) {
+                expandedStories.delete(id);
+            } else {
+                expandedStories.add(id);
+            }
+            renderStoriesGrid();
+        }
+
+        // Initialize 6 Story Blocks
+        renderStoriesGrid();
+
+        // 4. Netflix-Style Interactive Q&A Data & Renderer
+        const faqItems = [
+            {
+                question: "What is Solaris and how was it built by Team Hyperion for NASA Space Apps?",
+                answer: "Solaris is an interactive space exploration game and astronomy companion created by Team Hyperion for the NASA Space Apps Challenge. It bridges real astrophysics datasets—like JPL planetary ephemerides, Solar Dynamics Observatory imagery, and Exoplanet Archive light curves—with intuitive orbital mechanics gameplay."
+            },
+            {
+                question: "Is Solaris free to play, and do I need to create an account?",
+                answer: "Solaris is 100% free and runs directly in your desktop or mobile browser with zero sign-up, login walls, or downloads required. Simply click 'Play Solaris' or 'Launch Solaris Mission' anywhere on the site to start piloting spacecraft immediately."
+            },
+            {
+                question: "How accurate is the astronomy data and orbital physics inside Solaris?",
+                answer: "Every mission scenario in Solaris is grounded in real Newtonian N-body gravity equations and verified NASA Planetary Data System parameters. Whether you are timing a Hohmann transfer orbit or shielding your probe from a solar coronal mass ejection, the trajectories mirror genuine spaceflight principles."
+            },
+            {
+                question: "Can teachers and students use Solaris in classrooms?",
+                answer: "Yes! Team Hyperion designed Solaris as both an engaging arcade simulation and an open educational resource. Students can switch between 'Astronomy' mode—to inspect live celestial telemetry and field articles on Mars, the Moon, and solar storms—and 'Game' mode to test those concepts hands-on."
+            },
+            {
+                question: "What NASA open datasets power the Solaris stories and missions?",
+                answer: "Our telemetry cards, field stories, and mission briefings draw directly from NASA JPL Horizons, the NASA Exoplanet Archive, the Lunar Reconnaissance Orbiter (LRO) data node, the Solar Dynamics Observatory (SDO), and Mars 2020 Perseverance mission logs."
+            },
+            {
+                question: "Who is Team Hyperion?",
+                answer: "Team Hyperion is a multidisciplinary group of student developers, astrophysics enthusiasts, and interface designers participating in the NASA Space Apps Challenge with a shared mission to make space science tactile, visual, and accessible to everyone."
+            }
+        ];
+
+        function renderFaqAccordion() {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = faqItems.map((item, idx) => `
+                <div class="faq-item bg-stoneWarm hover:bg-stoneCard/70 transition-colors rounded-2xl border border-stone-200/80 overflow-hidden" data-open="${idx === 0 ? 'true' : 'false'}">
+                    <button 
+                        type="button"
+                        onclick="toggleFaqItem(this)"
+                        aria-expanded="${idx === 0 ? 'true' : 'false'}"
+                        class="w-full p-4 sm:px-6 sm:py-5 text-left flex items-center justify-between gap-3 sm:gap-4 cursor-pointer focus:outline-none">
+                        <span class="text-sm sm:text-base font-medium text-ink leading-snug pr-2">
+                            ${item.question}
+                        </span>
+                        <span class="faq-icon shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-stone-200 text-ink flex items-center justify-center text-base sm:text-lg font-light select-none">
+                            +
+                        </span>
+                    </button>
+                    <div class="faq-answer-wrapper">
+                        <div class="faq-answer-inner">
+                            <div class="px-4 sm:px-6 pb-5 sm:pb-6 pt-2 text-xs sm:text-sm text-mutedInk leading-relaxed border-t border-stone-200/60">
+                                ${item.answer}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleFaqItem(buttonEl) {
+            const item = buttonEl.closest('.faq-item');
+            const isOpen = item.getAttribute('data-open') === 'true';
+
+            // Close all other items for crisp Netflix-style single-focus toggle (or allow independent toggle)
+            document.querySelectorAll('.faq-item').forEach(el => {
+                el.setAttribute('data-open', 'false');
+                const btn = el.querySelector('button');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            });
+
+            if (!isOpen) {
+                item.setAttribute('data-open', 'true');
+                buttonEl.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Initialize Netflix-style Q&A
+        renderFaqAccordion();
+
+        // ==================== PAGE VIEW SWITCHER (HOME vs ABOUT US) ====================
+        let activePageView = 'home';
+
+        function switchPageView(page, skipScroll = false) {
+            activePageView = page;
+            const homeMain = document.getElementById('page-home');
+            const aboutMain = document.getElementById('page-about');
+            const navHome = document.getElementById('nav-home');
+            const navAbout = document.getElementById('nav-about');
+            const footerSwitchBtn = document.getElementById('footer-switch-page-btn');
+
+            if (page === 'about') {
+                homeMain.classList.add('hidden');
+                aboutMain.classList.remove('hidden');
+                navAbout.className = "text-sm sm:text-base font-medium transition-colors py-2 relative cursor-pointer whitespace-nowrap shrink-0 nav-link-active";
+                navHome.className = "text-sm sm:text-base font-medium transition-colors py-2 relative cursor-pointer whitespace-nowrap shrink-0 nav-link-inactive";
+                if (footerSwitchBtn) footerSwitchBtn.textContent = "Explore Home Page →";
+            } else {
+                aboutMain.classList.add('hidden');
+                homeMain.classList.remove('hidden');
+                navHome.className = "text-sm sm:text-base font-medium transition-colors py-2 relative cursor-pointer whitespace-nowrap shrink-0 nav-link-active";
+                navAbout.className = "text-sm sm:text-base font-medium transition-colors py-2 relative cursor-pointer whitespace-nowrap shrink-0 nav-link-inactive";
+                if (footerSwitchBtn) footerSwitchBtn.textContent = "Meet Team Hyperion →";
+            }
+
+            if (!skipScroll) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function toggleFooterPageView() {
+            switchPageView(activePageView === 'home' ? 'about' : 'home');
+        }
+
+        function navigateFromFooterToTab(tab) {
+            switchPageView('home', true);
+            setShowcaseTab(tab);
+            setTimeout(() => {
+                const el = document.getElementById('showcase');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 60);
+        }
+
+        function openStoryFromFooter(storyId) {
+            switchPageView('home', true);
+            expandedStories.add(storyId);
+            renderStoriesGrid();
+            setTimeout(() => {
+                const card = document.getElementById(`story-card-${storyId}`);
+                if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 60);
+        }
+
+        function navigateToSection(page, sectionId) {
+            switchPageView(page, true);
+            setTimeout(() => {
+                const section = document.getElementById(sectionId);
+                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 60);
+        }
+
+        function openDatasetModal(title, description) {
+            document.getElementById('info-modal-tag').textContent = 'NASA OPEN DATA ARCHIVE';
+            document.getElementById('info-modal-title').textContent = title;
+            document.getElementById('info-modal-body').textContent = description;
+            const infoModal = document.getElementById('info-modal');
+            infoModal.classList.remove('hidden');
+            infoModal.classList.add('flex');
+        }
+
+        function updateFooterUtcClock() {
+            const clockEl = document.getElementById('footer-utc-clock');
+            if (!clockEl) return;
+            const now = new Date();
+            const hh = String(now.getUTCHours()).padStart(2, '0');
+            const mm = String(now.getUTCMinutes()).padStart(2, '0');
+            const ss = String(now.getUTCSeconds()).padStart(2, '0');
+            clockEl.textContent = `UTC ${hh}:${mm}:${ss}`;
+        }
+        setInterval(updateFooterUtcClock, 1000);
+        updateFooterUtcClock();
+
+        // ==================== ABOUT US: CHALLENGE PIPELINE EXPLORER ====================
+        const pipelineStages = [
+            {
+                tag: "Stage 01 • Telemetry Ingestion",
+                title: "Multi-Mission NASA Open API Normalization",
+                desc: "We aggregate real-time and archival parameters from JPL Horizons (orbital vectors), DONKI (coronal mass ejection speed & geomagnetic indices), and the NASA Exoplanet Archive into a unified JSON schema.",
+                metrics: [
+                    { label: "Data Sources", value: "JPL / DONKI / PDS" },
+                    { label: "Coordinate Frame", value: "Ecliptic J2000" },
+                    { label: "Payload Size", value: "< 18 KB Compressed" }
+                ],
+                codePreview: `GET https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND='301'&EPHEM_TYPE='VECTORS'`
+            },
+            {
+                tag: "Stage 02 • Astrodynamics Engine",
+                title: "Keplerian & Newtonian N-Body Physics Step",
+                desc: "Every frame computes gravitational acceleration vectors (F = G·M·m / r²) around primary bodies while checking delta-v thruster burns and radiation flux exposure during solar storm events.",
+                metrics: [
+                    { label: "Integrator", value: "Velocity Verlet" },
+                    { label: "Simulation Rate", value: "60 Hz Fixed Step" },
+                    { label: "Collision Check", value: "Continuous Raycast" }
+                ],
+                codePreview: `accelX = (-G * starMass * dx) / Math.pow(distSq, 1.5) + thrustVector.x;`
+            },
+            {
+                tag: "Stage 03 • Tactile Editorial Interface",
+                title: "Zero-Friction Browser Rendering & Field Notes",
+                desc: "Scientific telemetry is paired side-by-side with editorial stories and our playable HTML5 Canvas simulator so learners can move seamlessly from reading about an Artemis lunar orbit to flying it in Solaris.",
+                metrics: [
+                    { label: "UI Paradigm", value: "Editorial Dual-Mode" },
+                    { label: "Accessibility", value: "WCAG AA Contrast" },
+                    { label: "Account Required", value: "None (Instant Play)" }
+                ],
+                codePreview: `Solaris.launchMission({ team: 'Hyperion', target: 'Shackleton_Crater', mode: 'Interactive_Sandbox' });`
+            }
+        ];
+
+        function selectPipelineStage(index) {
+            [0, 1, 2].forEach(i => {
+                const btn = document.getElementById(`pipe-btn-${i}`);
+                if (!btn) return;
+                if (i === index) {
+                    btn.className = "px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-medium bg-ink text-white transition cursor-pointer whitespace-nowrap text-center";
+                } else {
+                    btn.className = "px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-medium text-mutedInk hover:text-ink transition cursor-pointer whitespace-nowrap text-center";
+                }
+            });
+
+            const stage = pipelineStages[index];
+            const container = document.getElementById('pipeline-stage-content');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center tab-fade-enter">
+                    <div class="lg:col-span-7 min-w-0">
+                        <span class="text-[11px] font-medium text-mutedInk">${stage.tag}</span>
+                        <h4 class="text-base sm:text-lg font-semibold text-ink mt-1 mb-2">${stage.title}</h4>
+                        <p class="text-xs sm:text-sm text-mutedInk leading-relaxed mb-4">${stage.desc}</p>
+                        <div class="p-3 rounded-xl bg-[#12141A] text-sky-300 font-mono text-[10px] sm:text-[11px] overflow-x-auto">
+                            ${stage.codePreview}
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5">
+                        ${stage.metrics.map(m => `
+                            <div class="p-3 sm:p-3.5 rounded-2xl bg-stoneWarm border border-stone-200/70 flex items-center justify-between gap-2">
+                                <span class="text-[11px] text-mutedInk">${m.label}</span>
+                                <span class="text-xs font-semibold text-ink text-right">${m.value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize Pipeline Stage 0
+        selectPipelineStage(0);
+
+        // ==================== ABOUT US: READ-ONLY TEAM HYPERION ROSTER ====================
+        const teamMembers = [
+            {
+                initials: "Hsu",
+                name: "Hsu Lin Aung",
+                role: "Project Lead & Game Developer",
+                focus: "Overall project leadership, core web architecture, code integration across JavaScript modules, and leading the final presentation delivery."
+            },
+            {
+                initials: "Min",
+                name: "Min Khant Kyaw",
+                role: "UI/UX Designer & Multimedia Producer",
+                focus: "Curating visual assets, finding high-quality icons and lunar imagery, designing the presentation deck, and producing intro/demo videos."
+            },
+            {
+                initials: "Hlwan",
+                name: "Hlwan Moe Aung",
+                role: "Lead Developer",
+                focus: "Building, optimizing, and scripting the web-based interactive mini-games and game mechanics (such as the ice drill and solar array systems)."
+            },
+            {
+                initials: "Shun",
+                name: "Shun Lea Myo",
+                role: "Research & Data Analyst",
+                focus: "Gathering NASA scientific data, researching lunar south pole conditions and space weather, and writing educational lore and tooltips."
+            }
+        ];
+
+        function renderTeamGrid() {
+            const grid = document.getElementById('team-grid');
+            if (!grid) return;
+
+            grid.innerHTML = teamMembers.map((member) => `
+                <div class="editorial-card bg-stoneWarm rounded-3xl p-6 border border-stone-200/70 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-5">
+                            <div class="w-11 h-11 rounded-2xl bg-ink text-white flex items-center justify-center font-serif text-lg">
+                                ${member.initials}
+                            </div>
+                        </div>
+
+                        <h3 class="editorial-heading text-2xl text-ink leading-tight mb-1">
+                            ${member.name}
+                        </h3>
+
+                        <p class="text-xs font-medium text-nasaBlue mb-3">
+                            ${member.role}
+                        </p>
+                    </div>
+
+                    <div class="pt-3.5 border-t border-stone-200/70">
+                        <p class="text-[10px] uppercase tracking-wider text-mutedInk mb-1">Primary Focus</p>
+                        <p class="text-[11px] font-medium text-ink leading-snug">
+                            ${member.focus}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize Read-Only Team Grid
+        renderTeamGrid();
+
+        // 5. Playable Orbital Navigation Mini-Game
+        const modal = document.getElementById('game-modal');
+        const canvas = document.getElementById('orbital-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('game-score');
+        const fuelEl = document.getElementById('game-fuel');
+        const bannerEl = document.getElementById('game-banner');
+
+        let animId = null;
+        let gameActive = false;
+        let probe = { x: 0, y: 0, vx: 0, vy: 0 };
+        let star = { x: 0, y: 0, mass: 1900, radius: 22 };
+        let beacons = [];
+        let starsBg = [];
+        let particles = [];
+        let collectedCount = 0;
+        let fuel = 100;
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width || 640;
+            canvas.height = rect.height || 400;
+            star.x = canvas.width / 2;
+            star.y = canvas.height / 2;
+        }
+
+        function initStars() {
+            starsBg = [];
+            for (let i = 0; i < 70; i++) {
+                starsBg.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 1.4 + 0.4,
+                    alpha: Math.random() * 0.6 + 0.2
+                });
+            }
+        }
+
+        function spawnBeacons() {
+            beacons = [];
+            const maxRadius = Math.max(70, Math.min(canvas.width, canvas.height) * 0.44);
+            const minRadius = Math.max(42, maxRadius * 0.42);
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * (Math.PI * 2)) / 5 + Math.random() * 0.45;
+                const dist = minRadius + ((maxRadius - minRadius) * (i / 4));
+                beacons.push({
+                    x: star.x + Math.cos(angle) * dist,
+                    y: star.y + Math.sin(angle) * dist,
+                    collected: false,
+                    pulse: Math.random() * Math.PI
+                });
+            }
+        }
+
+        function resetOrbitalGame() {
+            resizeCanvas();
+            initStars();
+            spawnBeacons();
+            collectedCount = 0;
+            fuel = 100;
+            scoreEl.textContent = '0';
+            fuelEl.textContent = '100%';
+            bannerEl.classList.add('hidden');
+
+            // Start probe in stable top orbit scaled to screen size
+            const orbitDist = Math.max(58, Math.min(canvas.width, canvas.height) * 0.3);
+            probe.x = star.x;
+            probe.y = star.y - orbitDist;
+            probe.vx = Math.sqrt(star.mass / orbitDist) * 1.02;
+            probe.vy = 0;
+            particles = [];
+            gameActive = true;
+        }
+
+        function openGameModal() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            resetOrbitalGame();
+            if (!animId) {
+                loopOrbitalGame();
+            }
+        }
+
+        function closeGameModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            gameActive = false;
+            if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+            }
+        }
+
+        // Click / Tap to thrust toward pointer
+        canvas.addEventListener('pointerdown', (e) => {
+            if (!gameActive || fuel <= 0) return;
+            const rect = canvas.getBoundingClientRect();
+            const tx = e.clientX - rect.left;
+            const ty = e.clientY - rect.top;
+            const dx = tx - probe.x;
+            const dy = ty - probe.y;
+            const len = Math.hypot(dx, dy) || 1;
+
+            probe.vx += (dx / len) * 0.85;
+            probe.vy += (dy / len) * 0.85;
+            fuel = Math.max(0, fuel - 4);
+            fuelEl.textContent = `${fuel}%`;
+
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: probe.x,
+                    y: probe.y,
+                    vx: -(dx / len) * (1.5 + Math.random() * 1.5) + (Math.random() - 0.5),
+                    vy: -(dy / len) * (1.5 + Math.random() * 1.5) + (Math.random() - 0.5),
+                    life: 1
+                });
+            }
+        });
+
+        function loopOrbitalGame() {
+            animId = requestAnimationFrame(loopOrbitalGame);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background stars
+            starsBg.forEach(s => {
+                ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            // Subtle reference orbit rings scaled to canvas size
+            const maxOrbitRing = Math.max(70, Math.min(canvas.width, canvas.height) * 0.44);
+            [0.48, 0.74, 1.0].forEach(ratio => {
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, maxOrbitRing * ratio, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+
+            // Draw central star
+            const grad = ctx.createRadialGradient(star.x, star.y, 4, star.x, star.y, 38);
+            grad.addColorStop(0, '#FDE047');
+            grad.addColorStop(0.5, '#F59E0B');
+            grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, 38, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#FEF08A';
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.radius * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (gameActive) {
+                // Newtonian Gravity toward central star
+                const dx = star.x - probe.x;
+                const dy = star.y - probe.y;
+                const distSq = Math.max(400, dx * dx + dy * dy);
+                const dist = Math.sqrt(distSq);
+                const force = star.mass / distSq;
+
+                probe.vx += (dx / dist) * force;
+                probe.vy += (dy / dist) * force;
+                probe.x += probe.vx;
+                probe.y += probe.vy;
+
+                // Check collision with star or out of bounds
+                if (dist < star.radius) {
+                    gameActive = false;
+                    document.getElementById('game-banner-tag').textContent = 'SOLAR IMPACT';
+                    document.getElementById('game-banner-title').textContent = 'Probe Entered Corona';
+                    document.getElementById('game-banner-desc').textContent = 'Gravitational pull drew the spacecraft too close to the star. Fire thrusters tangentially to raise periapsis!';
+                    bannerEl.classList.remove('hidden');
+                }
+            }
+
+            // Draw beacons
+            beacons.forEach(b => {
+                if (b.collected) return;
+                b.pulse += 0.06;
+                const d = Math.hypot(probe.x - b.x, probe.y - b.y);
+                if (d < 16 && gameActive) {
+                    b.collected = true;
+                    collectedCount++;
+                    scoreEl.textContent = String(collectedCount);
+                    if (collectedCount >= 5) {
+                        gameActive = false;
+                        document.getElementById('game-banner-tag').textContent = 'TELEMETRY COMPLETE';
+                        document.getElementById('game-banner-title').textContent = 'All 5 NASA Relays Synced!';
+                        document.getElementById('game-banner-desc').textContent = 'Exemplary orbital navigation. Your trajectory telemetry has been logged to the Space Apps archive.';
+                        bannerEl.classList.remove('hidden');
+                    }
+                }
+
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, 9 + Math.sin(b.pulse) * 3, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#38BDF8';
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Thruster particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.04;
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+                ctx.fillStyle = `rgba(96, 165, 250, ${p.life})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw Probe
+            ctx.save();
+            ctx.translate(probe.x, probe.y);
+            const angle = Math.atan2(probe.vy, probe.vx);
+            ctx.rotate(angle);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(8, 0);
+            ctx.lineTo(-6, -5);
+            ctx.lineTo(-4, 0);
+            ctx.lineTo(-6, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function closeInfoModal() {
+            document.getElementById('info-modal').classList.add('hidden');
+            document.getElementById('info-modal').classList.remove('flex');
+        }
+
+        window.addEventListener('resize', () => {
+            if (!modal.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        });
+    </script>
+</body>
+</html>
